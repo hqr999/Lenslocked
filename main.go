@@ -3,11 +3,13 @@ package main
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
 )
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html;charset=utf-8")
-	fmt.Fprint(w, "<h1> Bem Vindo ao meu Incrível site</h1>")
+	fmt.Fprint(w, "<h1> Bem Vindo ao meu Site!!!</h1>")
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
@@ -35,28 +37,14 @@ func faqHandler(w http.ResponseWriter, r *http.Request) {
 	`)
 }
 
-type Roteador struct{}
-
-func (rote Roteador) ServeHTTP(w http.ResponseWriter, r *http.Request){
-			switch r.URL.Path{
-				case "/":
-							homeHandler(w,r)
-			case "/contato":
-						contactHandler(w,r)
-			case "/faq":
-						faqHandler(w,r)
-			default:
-					w.WriteHeader(http.StatusNotFound)
-					fmt.Fprint(w,"Página não existe!")	
-				
-			}
-			
-
-
-}
-
 func main() {
-	fmt.Println("Ouvindo na porta :3000...")
-	var roteador Roteador
-	http.ListenAndServe(":3000",roteador)
+	r := chi.NewRouter()
+	fmt.Println("Começando o servidor na porta :3000...")
+	r.Get("/", homeHandler)
+	r.Get("/contato", contactHandler)
+	r.Get("/faq", faqHandler)
+	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "Página não encontrada", http.StatusNotFound)
+	})
+	http.ListenAndServe(":3000", r)
 }
