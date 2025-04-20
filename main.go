@@ -2,21 +2,35 @@ package main
 
 import (
 	"fmt"
+	"html/template"
+	"log"
 	"net/http"
+	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
 )
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	//Not Escaped
-	//bio := `<script>alert("Haha você foi h4x0r3d!");</script>`
-	
-	//Escaped HTML Characters 
-	bio := `&lt;script&gt;alert(&quot;Hi!&quot;);&lt;/script&gt;`
 
 	w.Header().Set("Content-Type", "text/html;charset=utf-8")
-	fmt.Fprint(w, "<h1> Bem Vindo ao meu Site!!!</h1><p>Bio"+bio+"</p>")
+	filePath := filepath.Join("templates","home.gohtml")
+	tpl, err := template.ParseFiles(filePath)
+	
+	if err != nil {
+		log.Printf("Erro ao parsear: %v",err)
+		http.Error(w,"Ocorreu um erro ao parsear um template",http.StatusInternalServerError)
+		return //Para de rodar o código aqui
+	}
+	err = tpl.Execute(w,"uma string")
+
+	if err != nil {
+		log.Printf("Executando o template: %v",err)
+		http.Error(w,"Ocorreu um erro ao Executar um template",http.StatusInternalServerError)
+		return //Para de rodar o código aqui	
 }
+
+}
+
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
 
