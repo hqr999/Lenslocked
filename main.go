@@ -44,21 +44,8 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 
 
 func faqHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, `<h1> FAQ </h1>
-		<ul> 
-			<li> Tem uma versão grátis ? 
-						<b> Sim.Oferecemos gratuitamente por 30 dias </b>
-			</li>
-
-			<li> Qual o horário de suporte ? 
-						<b> Estamos disponíveis 24 horas,7 dias por semana</b>
-			</li>
-
-			<li> Como eu entro em contato? 
-				<b> Por esse <a href="um_email@proton.com">Email </a> </b>
-			</li>
-	</ul>
-	`)
+	tlPath := filepath.Join("templates","faq.html")
+	executeHandler(w,tlPath)
 }
 
 func main() {
