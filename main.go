@@ -2,50 +2,39 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/hqr999/Go-Web-Development/views"
 )
 
 func executeHandler(w http.ResponseWriter, caminho_arquivo string) {
 	w.Header().Set("Content-Type", "text/html;charset=utf-8")
-	tpl, err := template.ParseFiles(caminho_arquivo)
-
+	tpl, err := views.ParseT(caminho_arquivo)
 	if err != nil {
-		log.Printf("Erro ao parsear: %v", err)
-		http.Error(w, "Ocorreu um erro ao parsear um template", http.StatusInternalServerError)
-		return //Para de rodar o código aqui
+		log.Printf("Parsing template: %w", err)
+		http.Error(w, "Houve um erro ao parsear o template", 404)
 	}
-	err = tpl.Execute(w, "uma string")
 
-	if err != nil {
-		log.Printf("Executando o template: %v", err)
-		http.Error(w, "Ocorreu um erro ao Executar um template", http.StatusInternalServerError)
-		return //Para de rodar o código aqui
-	}
+	tpl.Execute(w, nil)
 
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-		tlPath := filepath.Join("templates","home.gohtml")
-		executeHandler(w,tlPath)
+	tlPath := filepath.Join("templates", "home.gohtml")
+	executeHandler(w, tlPath)
 }
-
-
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
-		tlPath := filepath.Join("templates","contact.html")
-		executeHandler(w,tlPath)
+	tlPath := filepath.Join("templates", "contact.gohtml")
+	executeHandler(w, tlPath)
 }
 
-
-
 func faqHandler(w http.ResponseWriter, r *http.Request) {
-	tlPath := filepath.Join("templates","faq.html")
-	executeHandler(w,tlPath)
+	tlPath := filepath.Join("templates", "faq.gohtml")
+	executeHandler(w, tlPath)
 }
 
 func main() {
