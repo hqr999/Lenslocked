@@ -7,6 +7,14 @@ import (
 	"net/http"
 )
 
+func Must(te Template, err error) Template {
+	if err != nil {
+		panic(err)
+	}
+
+	return te
+}
+
 func ParseT(cam_arq string) (Template, error) {
 	tpl, err := template.ParseFiles(cam_arq)
 
