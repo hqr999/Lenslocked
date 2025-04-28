@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/hqr999/Go-Web-Development/controllers"
+	"github.com/hqr999/Go-Web-Development/templates"
 	"github.com/hqr999/Go-Web-Development/views"
 )
 
@@ -14,13 +14,13 @@ func main() {
 	r := chi.NewRouter()
 	//Vamos parsear todos os nossos Templates
 	//e depois iremos chamar nosso handlers
-	tpl := views.Must(views.ParseT(filepath.Join("templates", "home.gohtml")))
+	tpl := views.Must(views.ParseFS(templates.FS,"home.gohtml"))
 
 	r.Get("/", controllers.StaticHandler(tpl))
-	tpl2 := views.Must(views.ParseT(filepath.Join("templates", "contact.gohtml")))
+	tpl2 := views.Must(views.ParseFS(templates.FS,"contact.gohtml"))
 	r.Get("/contato", controllers.StaticHandler(tpl2))
 
-	tpl3 := views.Must(views.ParseT(filepath.Join("templates", "faq.gohtml")))
+	tpl3 := views.Must(views.ParseFS(templates.FS,"faq.gohtml"))
 	r.Get("/faq", controllers.StaticHandler(tpl3))
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Página não encontrada", http.StatusNotFound)
