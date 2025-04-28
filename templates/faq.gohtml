@@ -1,15 +1,10 @@
 <h1> FAQ </h1>
-		<ul> 
-			<li> Tem uma versão grátis ? 
-						<b> Sim.Oferecemos gratuitamente por 30 dias </b>
-			</li>
-
-			<li> Qual o horário de suporte ? 
-						<b> Estamos disponíveis 24 horas,7 dias por semana</b>
-			</li>
-
-			<li> Como eu entro em contato? 
-				<b> Por esse <a href="um_email@proton.com">Email </a> </b>
-			</li>
+		<ul>
+  {{range .}}
+    {{template "perguntas_faq" .}}
+  {{end}}
 	</ul>
 
+{{define "perguntas_faq"}}
+			<li><b>{{.Pergunta}}</b>{{.Resposta}}</li>
+{{end}}

@@ -21,7 +21,7 @@ func main() {
 	r.Get("/contato", controllers.StaticHandler(tpl2))
 
 	tpl3 := views.Must(views.ParseFS(templates.FS,"faq.gohtml"))
-	r.Get("/faq", controllers.StaticHandler(tpl3))
+	r.Get("/faq", controllers.FAQ(tpl3))
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Página não encontrada", http.StatusNotFound)
 	})

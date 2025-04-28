@@ -44,7 +44,7 @@ type Template struct {
 
 func (t Template) Execute(w http.ResponseWriter, data interface{}) {
 	w.Header().Set("Content-Type", "text/html;charset=utf-8")
-	err := t.html_tmpl.Execute(w, "uma string")
+	err := t.html_tmpl.Execute(w, data)
 
 	if err != nil {
 		log.Printf("Executando o template: %v", err)
