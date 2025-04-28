@@ -14,7 +14,11 @@ func main() {
 	r := chi.NewRouter()
 	//Vamos parsear todos os nossos Templates
 	//e depois iremos chamar nosso handlers
-	tpl := views.Must(views.ParseFS(templates.FS,"home.gohtml"))
+
+	//Se formos usar o layout-pagina.gohtml
+	//Ele deve ir primeiro em ParseFS, ou seja:
+	// views.ParseFS(templates.FS,"layout-pagina.gohtml","home.gohtml"))
+	tpl := views.Must(views.ParseFS(templates.FS,"home.gohtml","layout-partes.gohtml"))
 
 	r.Get("/", controllers.StaticHandler(tpl))
 	tpl2 := views.Must(views.ParseFS(templates.FS,"contact.gohtml"))
