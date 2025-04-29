@@ -15,16 +15,13 @@ func main() {
 	//Vamos parsear todos os nossos Templates
 	//e depois iremos chamar nosso handlers
 
-	//Se formos usar o layout-pagina.gohtml
-	//Ele deve ir primeiro em ParseFS, ou seja:
-	// views.ParseFS(templates.FS,"layout-pagina.gohtml","home.gohtml"))
-	tpl := views.Must(views.ParseFS(templates.FS,"home.gohtml","layout-partes.gohtml"))
+	tpl := views.Must(views.ParseFS(templates.FS, "home.gohtml", "tailwind.gohtml"))
 
 	r.Get("/", controllers.StaticHandler(tpl))
-	tpl2 := views.Must(views.ParseFS(templates.FS,"contact.gohtml"))
+	tpl2 := views.Must(views.ParseFS(templates.FS, "contact.gohtml", "tailwind.gohtml"))
 	r.Get("/contato", controllers.StaticHandler(tpl2))
 
-	tpl3 := views.Must(views.ParseFS(templates.FS,"faq.gohtml"))
+	tpl3 := views.Must(views.ParseFS(templates.FS, "faq.gohtml", "tailwind.gohtml"))
 	r.Get("/faq", controllers.FAQ(tpl3))
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Página não encontrada", http.StatusNotFound)

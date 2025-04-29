@@ -1,10 +1,12 @@
+{{template "header" .}}
 <h1> FAQ </h1>
-		<ul>
+<ul>
   {{range .}}
-    {{template "perguntas_faq" .}}
+  {{template "perguntas_faq" .}}
   {{end}}
-	</ul>
+</ul>
+{{template "footer" .}}
 
 {{define "perguntas_faq"}}
-			<li><b>{{.Pergunta}}</b>{{.Resposta}}</li>
+<li><b>{{.Pergunta}}</b>{{.Resposta}}</li>
 {{end}}

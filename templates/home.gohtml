@@ -1,10 +1,3 @@
-<!-- Maneira para renderizar usando layout-partes.gohtml--> 
-{{template "header"}}
+{{template "header" .}}
 <h1> Bem Vindo ao meu Site!!!</h1>
-{{template "footer"}}
-
-<!-- Maneira de renderizar usando layout-pagina.gohtml
-{{define "pagina"}}
-<h1>Bem Vindo ao meu Site!!!</h1>
-{{end}} -->
-
+{{template "footer" .}}
