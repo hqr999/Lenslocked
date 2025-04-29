@@ -13,9 +13,9 @@
     <nav class="px-8 py-6 flex items-center text-white">
       <div class="text-4xl pr-8 font-serif">Lenslocked</div>
       <div class="flex-grow">
-        <a class ="text-lg font-semibold hover:text-purple-700 pr-8" href="/">Home</a>
-        <a class ="text-lg font-semibold hover:text-purple-700 pr-8" href="/contato">Contato</a>
-       <a class ="text-lg font-semibold hover:text-purple-700 pr-8" href="/faq">Perguntas Frequentes</a>
+        <a class ="text-lg font-semibold no-underline hover:underline hover:text-purple-700  pr-8" href="/">Home</a>
+        <a class ="text-lg font-semibold no-underline hover:underline hover:text-purple-700  pr-8" href="/contato">Contato</a>
+       <a class ="text-lg font-semibold no-underline hover:underline hover:text-purple-700 pr-8" href="/faq">Perguntas Frequentes</a>
       </div>
       <div>
         <a class="pr-4" href="#">Sign in</a>
@@ -25,7 +25,11 @@
   </header>
   {{end}}
   {{define "footer"}}
+    <footer class="fixed bottom-0 py-5 w-full bg-gradient-to-r from-blue-800 to-indigo-800 text-center text-white">
+      &copy; 2025 feito por Henrique Reuter
+    </footer>
+
+{{end}}
 </body>
 
 </html>
-{{end}}
