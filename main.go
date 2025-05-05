@@ -28,7 +28,8 @@ func main() {
 	usersC := controllers.Usuarios{}
 	usersC.Templates.New = tpl4
 	r.Get("/signup", usersC.New)
-	
+	r.Post("/users",usersC.Create)
+
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Página não encontrada", http.StatusNotFound)
 	})
