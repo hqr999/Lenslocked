@@ -21,7 +21,7 @@ func (confSQL PostgresConfig) Stringfy() string {
 }
 
 func main() {
-	cf := PostgresConfig{"localhost","5440","hqr","drachen_feuer","lenslocked","disable"}
+	cf := PostgresConfig{"localhost", "5440", "hqr", "drachen_feuer", "lenslocked", "disable"}
 
 	db, err := sql.Open("pgx", cf.Stringfy())
 
@@ -35,4 +35,26 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("Conectado")
+
+	// Criando tabelas no nosso Banco de Dados
+	_, err = db.Exec(`
+			CREATE TABLE IF NOT EXISTS users (
+					id SERIAL PRIMARY KEY,
+					name TEXT,
+					email TEXT UNIQUE NOT NULL
+		);
+
+		CREATE TABLE IF NOT EXISTS orders (
+				id SERIAL PRIMARY KEY,
+				user_id INT NOT NULL,
+				amount INT,
+				description TEXT
+		);
+	`)
+
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Tabelas criadas!!")
+
 }
