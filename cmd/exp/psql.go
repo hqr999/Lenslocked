@@ -7,12 +7,28 @@ import (
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
-func main(){
-		db, err := sql.Open("pgx","host=localhost port=5440 user=hqr password=drachen_feuer dbname=lenslocked sslmode=disable")
+type PostgresConfig struct {
+	Host         string
+	Port         string
+	User         string
+	Password     string
+	DataBaseName string
+	SSLmode      string
+}
+
+func (confSQL PostgresConfig) Stringfy() string {
+	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", confSQL.Host, confSQL.Port, confSQL.User, confSQL.Password, confSQL.DataBaseName, confSQL.SSLmode)
+}
+
+func main() {
+	cf := PostgresConfig{"localhost","5440","hqr","drachen_feuer","lenslocked","disable"}
+
+	db, err := sql.Open("pgx", cf.Stringfy())
+
 	if err != nil {
 		panic(err)
 	}
-	
+
 	defer db.Close()
 	err = db.Ping()
 	if err != nil {
@@ -20,4 +36,3 @@ func main(){
 	}
 	fmt.Println("Conectado")
 }
-
