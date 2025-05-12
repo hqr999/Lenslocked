@@ -56,21 +56,29 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("Tabelas criadas")
-
-	// Inserido alguns dados na tabela
-	//E retornando um valor de id com QueryRow
-	name := "Don Jones"
-	email := "don_jones@hotmail.com"
+	
+	//Vamos achar o usuário com esse id e selecionar quais 
+	//colunas dele queremos 
+	id := 4
 	row := db.QueryRow(`
-			INSERT INTO users (name,email)
-			VALUES ($1,$2) RETURNING id;`, name, email)
-	row.Err() //-> Checa erros executando o código SQL com QueryRow
-	var id int
-	err = row.Scan(&id)// -> Escreve no endereço de memória de var qual o id daquela inserção que foi feita com o QueryRow
+			SELECT name, email
+			FROM users
+			WHERE id=$1;`,id)
+	
+	var name,email string 
+	err = row.Scan(&name,&email)
+	
+	//Checar se a nossa linha de retorno tem alguma coluna
+	//Bom testar com um id que sabemos que não está 
+	//em nosso banco de dados
+	if err == sql.ErrNoRows {
+		fmt.Println("Não tem uma linha para esse id = ",id)
+	}
+
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("Usuário criado. id = ",id)
-
+	fmt.Printf("User information: name=%s, email=%s \n",name,email)
+	
 }
