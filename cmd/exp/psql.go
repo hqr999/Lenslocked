@@ -82,7 +82,7 @@ func main() {
 	fmt.Printf("User information: name=%s, email=%s \n",name,email)
 
 	//Loop que insere 5 pedidos na tabela "orders"
-	userID := 1
+	/*userID := 1
 
 	for i := 1; i < 5; i++ {
 		quantidade := i * 100
@@ -95,6 +95,51 @@ func main() {
 		}
 	}
 
-	fmt.Println("Pedidos Falsos criados")
+	fmt.Println("Pedidos Falsos criados")*/
+
+	type Pedido struct {
+			Id int
+			UserId int 
+			Amount int 
+			Description string 
+	}
+	
+	var pedidos []Pedido
+	userID := 1
+	rows, err := db.Query(`
+			SELECT id, amount, description FROM orders
+			WHERE user_id=$1
+		`,userID)
+	if err != nil {
+		panic(err)
+	}
+
+	defer rows.Close()
+
+	for rows.Next(){
+		var pedido Pedido
+		pedido.UserId = userID
+		erro := rows.Scan(&pedido.Id,&pedido.Amount,&pedido.Description)
+
+		if erro != nil {
+			panic(erro)
+		}
+
+		pedidos = append(pedidos, pedido)
+	}
+	//O loop com rows.Next() pode retornar um erro
+	//logo devemos fazer uma checagem 
+	if rows.Err() != nil {
+		panic(rows.Err())
+	}
+
+	for key, val := range pedidos {
+		fmt.Printf("Pedido %d\n",key+1)
+		fmt.Printf("ID = %d\n",val.Id)
+		fmt.Printf("user_id = %d\n",val.UserId)
+		fmt.Printf("Amount = %d\n",val.Amount)
+		fmt.Printf("Description = %s\n",val.Description)
+		fmt.Println("----------------")
+	}
 
 }
