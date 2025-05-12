@@ -56,20 +56,30 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("Tabelas criadas")
-	
+
 	// Inserido alguns dados na tabela
-	name := "John Calhoun"
-	email := "jon@calhoun.io"
+	//Veja como esse método é propenso a injection
+	//O método com o $ evita a injeção, por isso sempre devemos usá-lo!!!
+	name := "',''); DROP TABLE users; --"
+	email := "bob@calhoun.io"
+	
+	//Isso causa injection
+	/*query2 := fmt.Sprintf(`
+			INSERT INTO users (name,email)
+			VALUES ('%s','%s');
+		`, name2, email2)
+	fmt.Printf("Executando: %s\n", query2)
+	_, err = db.Exec(query2)*/
+	
 
-	_, err = db.Exec( `
-			INSERT INTO users(name,email)
-			VALUES ($1, $2);`,name,email)
-
+	//Esse é o método que faz a verificação contra SQL Injection
+	_, err = db.Exec(`
+			INSERT INTO users (name,email)
+			VALUES ($1,$2);`,name,email)
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Println("Usuário criado.")
-
 
 }
