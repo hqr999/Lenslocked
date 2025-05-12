@@ -58,28 +58,19 @@ func main() {
 	fmt.Println("Tabelas criadas")
 
 	// Inserido alguns dados na tabela
-	//Veja como esse método é propenso a injection
-	//O método com o $ evita a injeção, por isso sempre devemos usá-lo!!!
-	name := "',''); DROP TABLE users; --"
-	email := "bob@calhoun.io"
-	
-	//Isso causa injection
-	/*query2 := fmt.Sprintf(`
+	//E retornando um valor de id com QueryRow
+	name := "Don Jones"
+	email := "don_jones@hotmail.com"
+	row := db.QueryRow(`
 			INSERT INTO users (name,email)
-			VALUES ('%s','%s');
-		`, name2, email2)
-	fmt.Printf("Executando: %s\n", query2)
-	_, err = db.Exec(query2)*/
-	
-
-	//Esse é o método que faz a verificação contra SQL Injection
-	_, err = db.Exec(`
-			INSERT INTO users (name,email)
-			VALUES ($1,$2);`,name,email)
+			VALUES ($1,$2) RETURNING id;`, name, email)
+	row.Err() //-> Checa erros executando o código SQL com QueryRow
+	var id int
+	err = row.Scan(&id)// -> Escreve no endereço de memória de var qual o id daquela inserção que foi feita com o QueryRow
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("Usuário criado.")
+	fmt.Println("Usuário criado. id = ",id)
 
 }
