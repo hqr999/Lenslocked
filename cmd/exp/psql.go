@@ -80,5 +80,21 @@ func main() {
 	}
 
 	fmt.Printf("User information: name=%s, email=%s \n",name,email)
-	
+
+	//Loop que insere 5 pedidos na tabela "orders"
+	userID := 1
+
+	for i := 1; i < 5; i++ {
+		quantidade := i * 100
+		descricao := fmt.Sprintf("Pedido Falso %d",i)
+		_, err = db.Exec(`
+				INSERT INTO orders(user_id, amount, description)
+				VALUES($1,$2,$3)`,userID,quantidade,descricao)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	fmt.Println("Pedidos Falsos criados")
+
 }
