@@ -13,24 +13,27 @@ func main() {
 		//Hash a senha
 		hash(os.Args[2])
 	case "compare":
-		compara(os.Args[2],os.Args[3])
+		compare(os.Args[2], os.Args[3])
 
 	default:
-			fmt.Printf("Comando inválido: %v\n", os.Args[1])
+		fmt.Printf("Comando inválido: %v\n", os.Args[1])
 	}
 }
 
 func hash(senha string) {
-	hashBytes,erro := bcrypt.GenerateFromPassword([]byte(senha),bcrypt.DefaultCost)
+	hashBytes, erro := bcrypt.GenerateFromPassword([]byte(senha), bcrypt.DefaultCost)
 	if erro != nil {
-		fmt.Printf("Erro ao fazer o hashing da senha: %v\n",senha)
-		return 
+		fmt.Printf("Erro ao fazer o hashing da senha: %v\n", senha)
+		return
 	}
-	fmt.Printf("%v\n",string(hashBytes))
+	fmt.Printf("%v\n", string(hashBytes))
 }
 
-
-func compara(senha,hash string) {
-	fmt.Printf("TODO: Comparar a senha %q com o hash %q\n",senha, hash)
-
+func compare(senha, hash string) {
+	error := bcrypt.CompareHashAndPassword([]byte(hash), []byte(senha))
+	if error != nil {
+		fmt.Printf("Senha Inválida: %v", senha)
+		return
+	}
+	fmt.Println("Senha está correta")
 }
