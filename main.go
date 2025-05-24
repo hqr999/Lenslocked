@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/hqr999/Go-Web-Development/controllers"
+	"github.com/hqr999/Go-Web-Development/models"
 	"github.com/hqr999/Go-Web-Development/templates"
 	"github.com/hqr999/Go-Web-Development/views"
 )
@@ -24,11 +25,25 @@ func main() {
 	tpl3 := views.Must(views.ParseFS(templates.FS, "faq.gohtml", "tailwind.gohtml"))
 	r.Get("/faq", controllers.FAQ(tpl3))
 
-	tpl4 := views.Must(views.ParseFS(templates.FS, "signup.gohtml","tailwind.gohtml"))
-	usersC := controllers.Usuarios{}
+	tpl4 := views.Must(views.ParseFS(templates.FS, "signup.gohtml", "tailwind.gohtml"))
+
+	//Fazendo a conexão com o Banco de Dados
+	config := models.DefaultPostrgesConfig()
+	db, err := models.Open(config)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	userService := models.UserService{
+		Banco_Dados: db,
+	}
+
+	usersC := controllers.Usuarios{
+		UserService: &userService}
 	usersC.Templates.New = tpl4
 	r.Get("/signup", usersC.New)
-	r.Post("/users",usersC.Create)
+	r.Post("/users", usersC.Create)
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Página não encontrada", http.StatusNotFound)

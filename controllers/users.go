@@ -3,12 +3,15 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+
+	models "github.com/hqr999/Go-Web-Development/models"
 )
 
 type Usuarios struct {
 	Templates struct {
 		New Template
 	}
+	UserService *models.UserService
 }
 
 func (u Usuarios) New(w http.ResponseWriter, r *http.Request) {
