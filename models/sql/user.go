@@ -1,6 +1,12 @@
 package models
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+	"strings"
+
+	"golang.org/x/crypto/bcrypt"
+)
 
 type User struct {
 	ID           int
@@ -9,5 +15,24 @@ type User struct {
 }
 
 type UserService struct {
-		Banco_Dados *sql.DB
+	Banco_Dados *sql.DB
+}
+
+func (u *UserService) Criar(email, password string) (*User, error) {
+	email = strings.ToLower(email)
+	hashBytes, erro := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if erro != nil {
+		return nil, fmt.Errorf("Usuário criado: %w", erro)
+	}
+	passwordHash := string(hashBytes)
+
+	usuario := User{Email: email, PasswordHash: passwordHash}
+	col := u.Banco_Dados.QueryRow(`
+			INSERT INTO users (email,password_hash)
+			VALUES ($1, $2) RETURNING id`, email, passwordHash)
+		erro = col.Scan(&usuario.ID)
+		if erro != nil {
+			return nil,fmt.Errorf("Usuário criado: %w",erro)
+	}
+	return &usuario,nil
 }
