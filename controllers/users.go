@@ -10,6 +10,7 @@ import (
 type Usuarios struct {
 	Templates struct {
 		New Template
+		Signin Template
 	}
 	UserService *models.UserService
 }
@@ -20,6 +21,15 @@ func (u Usuarios) New(w http.ResponseWriter, r *http.Request) {
 	}
 	data.Email = r.FormValue("email")
 	u.Templates.New.Execute(w, data)
+
+}
+
+func (u Usuarios) Signin(w http.ResponseWriter, r *http.Request) {
+	var data struct {
+		Email string
+	}
+	data.Email = r.FormValue("email")
+	u.Templates.Signin.Execute(w, data)
 
 }
 

@@ -27,6 +27,8 @@ func main() {
 
 	tpl4 := views.Must(views.ParseFS(templates.FS, "signup.gohtml", "tailwind.gohtml"))
 
+	tpl5 := views.Must(views.ParseFS(templates.FS, "signin.gohtml", "tailwind.gohtml"))
+
 	//Fazendo a conexão com o Banco de Dados
 	config := models.DefaultPostrgesConfig()
 	db, err := models.Open(config)
@@ -42,8 +44,10 @@ func main() {
 	usersC := controllers.Usuarios{
 		UserService: &userService}
 	usersC.Templates.New = tpl4
+	usersC.Templates.Signin = tpl5
 	r.Get("/signup", usersC.New)
 	r.Post("/users", usersC.Create)
+	r.Get("/signin", usersC.Signin)
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Página não encontrada", http.StatusNotFound)
