@@ -24,14 +24,6 @@ func (u Usuarios) New(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (u Usuarios) Signin(w http.ResponseWriter, r *http.Request) {
-	var data struct {
-		Email string
-	}
-	data.Email = r.FormValue("email")
-	u.Templates.Signin.Execute(w, data)
-
-}
 
 func (u Usuarios) Create(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("email")
@@ -44,3 +36,31 @@ func (u Usuarios) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Fprintf(w, "Usuário criado: %v", user)
 }
+
+
+func (u Usuarios) Signin(w http.ResponseWriter, r *http.Request) {
+	var data struct {
+		Email string
+	}
+	data.Email = r.FormValue("email")
+	u.Templates.Signin.Execute(w, data)
+
+}
+
+
+func (u Usuarios) ProcessSignin(w http.ResponseWriter, r *http.Request) {
+	var data struct {
+		Email string
+		Password string 
+	}
+	data.Email = r.FormValue("email")
+	data.Password = r.FormValue("password")
+	user ,err := u.UserService.Autenticar(data.Email,data.Password)
+	if err != nil {
+			http.Error(w,"Alguma coisa deu errado",http.StatusInternalServerError)
+		return 
+	}
+	fmt.Fprintf(w,"Usuário autenticado: %v", user)
+}
+
+

@@ -53,7 +53,6 @@ func (u UserService) Autenticar(email, password string) (*User, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Autenticação: %v", err)
 	}
-	fmt.Println("Senha está correta")
 
 	return &usuario, nil
 }
