@@ -24,6 +24,13 @@ func (u Usuarios) New(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u Usuarios) Create(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Email: ", r.FormValue("email"))
-	fmt.Fprint(w, "\nPassword: " ,r.FormValue("password"))
+	email := r.FormValue("email")
+	password := r.FormValue("password")
+	user, err := u.UserService.Criar(email, password)
+	if err != nil {
+		fmt.Println()
+		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
+		return
+	}
+	fmt.Fprintf(w, "Usuário criado: %v", user)
 }
