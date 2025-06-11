@@ -62,6 +62,7 @@ func (u Usuarios) ProcessSignin(w http.ResponseWriter, r *http.Request) {
 		Name:  "email",
 		Value: user.Email,
 		Path:  "/",
+		HttpOnly: true, //Isso garante que cookies não possam ser acessados através do javascript
 	}
 	http.SetCookie(w, &cookie)
 	fmt.Fprintf(w, "Usuário autenticado: %v", user)
