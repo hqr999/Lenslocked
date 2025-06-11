@@ -9,7 +9,7 @@ import (
 
 type Usuarios struct {
 	Templates struct {
-		New Template
+		New    Template
 		Signin Template
 	}
 	UserService *models.UserService
@@ -24,7 +24,6 @@ func (u Usuarios) New(w http.ResponseWriter, r *http.Request) {
 
 }
 
-
 func (u Usuarios) Create(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("email")
 	password := r.FormValue("password")
@@ -37,7 +36,6 @@ func (u Usuarios) Create(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Usuário criado: %v", user)
 }
 
-
 func (u Usuarios) Signin(w http.ResponseWriter, r *http.Request) {
 	var data struct {
 		Email string
@@ -47,27 +45,34 @@ func (u Usuarios) Signin(w http.ResponseWriter, r *http.Request) {
 
 }
 
-
 func (u Usuarios) ProcessSignin(w http.ResponseWriter, r *http.Request) {
 	var data struct {
-		Email string
-		Password string 
+		Email    string
+		Password string
 	}
 	data.Email = r.FormValue("email")
 	data.Password = r.FormValue("password")
-	user ,err := u.UserService.Autenticar(data.Email,data.Password)
+	user, err := u.UserService.Autenticar(data.Email, data.Password)
 	if err != nil {
-			http.Error(w,"Alguma coisa deu errado",http.StatusInternalServerError)
-		return 
+		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
+		return
 	}
-	
+
 	cookie := http.Cookie{
-		Name: "email",
+		Name:  "email",
 		Value: user.Email,
-		Path: "/",
+		Path:  "/",
 	}
-	http.SetCookie(w,&cookie)
-	fmt.Fprintf(w,"Usuário autenticado: %v", user)
+	http.SetCookie(w, &cookie)
+	fmt.Fprintf(w, "Usuário autenticado: %v", user)
 }
 
-
+func (u Usuarios) UsuarioAtual(w http.ResponseWriter, r *http.Request) {
+	email, erro := r.Cookie("email")
+	if erro != nil {
+		fmt.Fprint(w, "O cookie não pode ser lido.")
+		return
+	}
+	fmt.Fprintf(w, "Email cookie:%s\n", email.Value)
+	fmt.Fprintf(w,"Headers: %+v\n",r.Header)
+}
