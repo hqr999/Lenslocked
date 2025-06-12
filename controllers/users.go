@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 
+	"github.com/gorilla/csrf"
 	models "github.com/hqr999/Go-Web-Development/models"
 )
 
@@ -18,8 +20,10 @@ type Usuarios struct {
 func (u Usuarios) New(w http.ResponseWriter, r *http.Request) {
 	var data struct {
 		Email string
+		CSRFcampo template.HTML
 	}
 	data.Email = r.FormValue("email")
+	data.CSRFcampo = csrf.TemplateField(r)
 	u.Templates.New.Execute(w, data)
 
 }
