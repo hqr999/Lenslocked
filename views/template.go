@@ -1,21 +1,22 @@
 package views
 
 import (
+	"bytes"
 	"fmt"
+	"github.com/gorilla/csrf"
 	"html/template"
+	"io"
 	"io/fs"
 	"log"
 	"net/http"
-
-	"github.com/gorilla/csrf"
 )
 
 func ParseFS(fs fs.FS, padroes ...string) (Template, error) {
 	tpl := template.New(padroes[0])
 	tpl = tpl.Funcs(
 		template.FuncMap{
-			"campo_csrf": func() template.HTML {
-				return `<input type="hidden"/>`
+			"campo_csrf": func() (template.HTML, error) {
+				return "", fmt.Errorf("Função campo_csrf ainda não foi implementado")
 			},
 		},
 	)
@@ -69,12 +70,14 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface
 	)
 
 	w.Header().Set("Content-Type", "text/html;charset=utf-8")
-	err = tpl.Execute(w, data)
-	
+	var buf bytes.Buffer
+	err = tpl.Execute(&buf, data)
+
 	if err != nil {
 		log.Printf("Executando o template: %v", err)
 		http.Error(w, "Ocorreu um erro ao Executar um template", http.StatusInternalServerError)
 		return //Para de rodar o código aqui
 	}
+	io.Copy(w, &buf)
 
 }
