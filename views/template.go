@@ -6,6 +6,8 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/csrf"
 )
 
 func ParseFS(fs fs.FS, padroes ...string) (Template, error) {
@@ -13,7 +15,7 @@ func ParseFS(fs fs.FS, padroes ...string) (Template, error) {
 	tpl = tpl.Funcs(
 		template.FuncMap{
 			"campo_csrf": func() template.HTML {
-				return `<!-- TODO: Implementar o campo csrf -->`
+				return `<input type="hidden"/>`
 			},
 		},
 	)
@@ -49,10 +51,26 @@ type Template struct {
 	html_tmpl *template.Template
 }
 
-func (t Template) Execute(w http.ResponseWriter,r *http.Request ,data interface{}) {
-	w.Header().Set("Content-Type", "text/html;charset=utf-8")
-	err := t.html_tmpl.Execute(w, data)
+func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface{}) {
+	tpl, err := t.html_tmpl.Clone()
 
+	if err != nil {
+		log.Printf("Template clonado: %v", err)
+		http.Error(w, "Houve um erro renderizando a página", http.StatusInternalServerError)
+		return
+	}
+
+	tpl = tpl.Funcs(
+		template.FuncMap{
+			"campo_csrf": func() template.HTML {
+				return csrf.TemplateField(r)
+			},
+		},
+	)
+
+	w.Header().Set("Content-Type", "text/html;charset=utf-8")
+	err = tpl.Execute(w, data)
+	
 	if err != nil {
 		log.Printf("Executando o template: %v", err)
 		http.Error(w, "Ocorreu um erro ao Executar um template", http.StatusInternalServerError)

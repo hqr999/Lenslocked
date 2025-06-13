@@ -63,6 +63,7 @@ func main() {
 		[]byte(csrfChave),
 		//TODO: Consertar antes de deploy
 		csrf.Secure(false),
+		csrf.TrustedOrigins([]string {"localhost:3000"}),
 	)
 
 	http.ListenAndServe(":3000", csrfMiddleware(r))
