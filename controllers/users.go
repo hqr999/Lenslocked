@@ -20,7 +20,7 @@ func (u Usuarios) New(w http.ResponseWriter, r *http.Request) {
 		Email string
 	}
 	data.Email = r.FormValue("email")
-	u.Templates.New.Execute(w, data)
+	u.Templates.New.Execute(w, r, data)
 
 }
 
@@ -41,7 +41,7 @@ func (u Usuarios) Signin(w http.ResponseWriter, r *http.Request) {
 		Email string
 	}
 	data.Email = r.FormValue("email")
-	u.Templates.Signin.Execute(w, data)
+	u.Templates.Signin.Execute(w, r, data)
 
 }
 
@@ -59,9 +59,9 @@ func (u Usuarios) ProcessSignin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cookie := http.Cookie{
-		Name:  "email",
-		Value: user.Email,
-		Path:  "/",
+		Name:     "email",
+		Value:    user.Email,
+		Path:     "/",
 		HttpOnly: true, //Isso garante que cookies não possam ser acessados através do javascript
 	}
 	http.SetCookie(w, &cookie)
@@ -75,5 +75,5 @@ func (u Usuarios) UsuarioAtual(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Fprintf(w, "Email cookie:%s\n", email.Value)
-	fmt.Fprintf(w,"Headers: %+v\n",r.Header)
+	fmt.Fprintf(w, "Headers: %+v\n", r.Header)
 }

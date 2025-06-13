@@ -13,7 +13,7 @@ func ParseFS(fs fs.FS, padroes ...string) (Template, error) {
 	tpl = tpl.Funcs(
 		template.FuncMap{
 			"campo_csrf": func() template.HTML {
-				return `<input type="hidden" />`
+				return `<!-- TODO: Implementar o campo csrf -->`
 			},
 		},
 	)
@@ -49,7 +49,7 @@ type Template struct {
 	html_tmpl *template.Template
 }
 
-func (t Template) Execute(w http.ResponseWriter, data interface{}) {
+func (t Template) Execute(w http.ResponseWriter,r *http.Request ,data interface{}) {
 	w.Header().Set("Content-Type", "text/html;charset=utf-8")
 	err := t.html_tmpl.Execute(w, data)
 
