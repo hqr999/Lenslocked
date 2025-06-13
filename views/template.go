@@ -6,15 +6,22 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
-
 )
 
 func ParseFS(fs fs.FS, padroes ...string) (Template, error) {
-	tpl, err := template.ParseFS(fs, padroes...)
+	tpl := template.New(padroes[0])
+	tpl = tpl.Funcs(
+		template.FuncMap{
+			"campo_csrf": func() template.HTML {
+				return `<input type="hidden" />`
+			},
+		},
+	)
+
+	tpl, err := tpl.ParseFS(fs, padroes...)
 	if err != nil {
 		return Template{}, fmt.Errorf("Parsisng template: %w", err)
 	}
-
 	return Template{tpl}, nil
 
 }
