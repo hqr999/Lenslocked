@@ -12,7 +12,8 @@ type Usuarios struct {
 		New    Template
 		Signin Template
 	}
-	UserService *models.UserService
+	UserService    *models.UserService
+	SessionService *models.SessionService
 }
 
 func (u Usuarios) New(w http.ResponseWriter, r *http.Request) {
@@ -33,6 +34,21 @@ func (u Usuarios) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
 		return
 	}
+	session, err := u.SessionService.Create(user.ID)
+	if err != nil {
+		fmt.Println(err)
+		//A FAZER Deveríamos dar um warning sobre não conseguir logar
+		http.Redirect(w, r, "/signin", http.StatusNotFound)
+		return
+	}
+	cookie := http.Cookie{
+		Name:     "session",
+		Value:    session.Token,
+		Path:     "/",
+		HttpOnly: true,
+	}
+	http.SetCookie(w, &cookie)
+	http.Redirect(w, r, "/signin", http.StatusFound)
 	fmt.Fprintf(w, "Usuário criado: %v", user)
 }
 
@@ -57,23 +73,31 @@ func (u Usuarios) ProcessSignin(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
 		return
 	}
-
+	session, err := u.SessionService.Create(user.ID)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
+	}
 	cookie := http.Cookie{
-		Name:     "email",
-		Value:    user.Email,
+		Name:     "session",
+		Value:    session.Token,
 		Path:     "/",
 		HttpOnly: true, //Isso garante que cookies não possam ser acessados através do javascript
 	}
 	http.SetCookie(w, &cookie)
-	fmt.Fprintf(w, "Usuário autenticado: %v", user)
+	http.Redirect(w, r, "/users/me", http.StatusFound)
 }
 
 func (u Usuarios) UsuarioAtual(w http.ResponseWriter, r *http.Request) {
-	email, erro := r.Cookie("email")
+	token, erro := r.Cookie("session")
 	if erro != nil {
-		fmt.Fprint(w, "O cookie não pode ser lido.")
-		return
+		fmt.Println(erro)
+		http.Redirect(w, r, "/signin", http.StatusFound)
 	}
-	fmt.Fprintf(w, "Email cookie:%s\n", email.Value)
-	fmt.Fprintf(w, "Headers: %+v\n", r.Header)
+	user, err := u.SessionService.User(token.Value)
+	if err != nil {
+		fmt.Println(err)
+		http.Redirect(w, r, "/signin", http.StatusFound)
+	}
+	fmt.Fprintf(w, "Usuário atual:%s\n", user.Email)
 }
