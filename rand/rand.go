@@ -29,8 +29,3 @@ func String(n int) (string, error) {
 	return base64.RawURLEncoding.EncodeToString(b), nil
 }
 
-const sessionTokenBytes = 32
-
-func SessionToken() (string, error) {
-	return String(sessionTokenBytes)
-}

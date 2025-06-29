@@ -7,6 +7,11 @@ import (
 	"github.com/hqr999/Go-Web-Development/rand"
 )
 
+// O mínimo de bytes necessários para serem usados em cada token de sessão
+const (
+	MinBytesPorToken = 32
+)
+
 type Session struct {
 	ID     int
 	UserID int
@@ -20,10 +25,19 @@ type Session struct {
 
 type SessionService struct {
 	DB *sql.DB
+	//Bytes por token é usado para determinar quantos bytes
+	//devem ser usados quando se fizer a geração do token de sessão
+	//Se esse valor não for definido ou for menor que a
+	//constante MinBytesPorToken, ele será ignorado e usaremos MinBytesPorToken.
+	BytesPorToken int
 }
 
 func (ss *SessionService) Create(userId int) (*Session, error) {
-	token, err := rand.SessionToken()
+	bytesPorToken := ss.BytesPorToken
+	if bytesPorToken < MinBytesPorToken {
+		bytesPorToken = MinBytesPorToken
+	}
+	token, err := rand.String(bytesPorToken)
 	if err != nil {
 		return nil, fmt.Errorf("create: %w", err)
 	}
