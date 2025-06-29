@@ -1,6 +1,11 @@
 package models
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+
+	"github.com/hqr999/Go-Web-Development/rand"
+)
 
 type Session struct {
 	ID     int
@@ -18,13 +23,22 @@ type SessionService struct {
 }
 
 func (ss *SessionService) Create(userId int) (*Session, error) {
-	//A FAZER Cria um token de sessão
-	//A FAZER Implementar SessionService.Create
-	return nil, nil
+	token, err := rand.SessionToken()
+	if err != nil {
+		return nil, fmt.Errorf("create: %w", err)
+	}
+	sessao := Session{
+		//Identificador será dado pelo banco de dados
+		UserID: userId,
+		Token:  token,
+		//A FAZER colocar o hash no token
+	}
+	//A FAZER salvar a sessao no BD
+	return &sessao, nil
 
 }
 
 func (ss *SessionService) User(token string) (*User, error) {
 	//A FAZER Implementar SessionService.user
-	return nil, nil 
+	return nil, nil
 }

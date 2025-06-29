@@ -41,9 +41,13 @@ func main() {
 	userService := models.UserService{
 		Banco_Dados: db,
 	}
-
+	sessaoServico := models.SessionService{
+		DB: db,
+	}
 	usersC := controllers.Usuarios{
-		UserService: &userService}
+		UserService:    &userService,
+		SessionService: &sessaoServico,
+	}
 	usersC.Templates.New = tpl4
 	usersC.Templates.Signin = tpl5
 	r.Get("/signup", usersC.New)
@@ -63,7 +67,7 @@ func main() {
 		[]byte(csrfChave),
 		//TODO: Consertar antes de deploy
 		csrf.Secure(false),
-		csrf.TrustedOrigins([]string {"localhost:3000"}),
+		csrf.TrustedOrigins([]string{"localhost:3000"}),
 	)
 
 	http.ListenAndServe(":3000", csrfMiddleware(r))
