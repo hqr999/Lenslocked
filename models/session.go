@@ -49,9 +49,25 @@ func (ss *SessionService) Create(userId int) (*Session, error) {
 		Token:     token,
 		TokenHash: ss.hash(token),
 	}
-	//A FAZER salvar a sessao no BD
+	//1. Tentar dar Update na sessão do usuário
+	//2. Se obtermos um erro, criamos uma nova sessão
+	linha := ss.DB.QueryRow(`
+				UPDATE sessions 
+				SET token_hash = $2
+				WHERE user_id = $1
+				RETURNING id;`, sessao.UserID, sessao.TokenHash)
+	err = linha.Scan(&sessao.ID)
+	if err == sql.ErrNoRows {
+		linha = ss.DB.QueryRow(`
+					INSERT INTO sessions (user_id,token_hash)
+					VALUES ($1,$2)
+					RETURNING id;`, sessao.UserID, sessao.TokenHash)
+		err = linha.Scan(&sessao.ID)
+	}
+	if err != nil {
+		return nil, fmt.Errorf("create: %w", err)
+	}
 	return &sessao, nil
-
 }
 
 func (ss *SessionService) User(token string) (*User, error) {
