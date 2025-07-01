@@ -18,6 +18,12 @@
        <a class ="text-lg font-semibold no-underline hover:underline hover:text-purple-700 pr-8" href="/faq">Perguntas Frequentes</a>
       </div>
       <div>
+          <form action="/signout" method="post" class="inline pr-4">
+            <div class="hidden">
+              {{campo_csrf}}
+            </div>
+            <button type="submit">Sair</button>
+          </form>
         <a class="pr-4" href="/signin">Entrar</a>
         <a class="px-4 py-2 bg-blue-700 hoover:bg-blue-600 rounded" href="/signup">Se inscreva</a>
       </div>
