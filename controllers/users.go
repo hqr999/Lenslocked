@@ -41,7 +41,7 @@ func (u Usuarios) Create(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/signin", http.StatusNotFound)
 		return
 	}
-	setCookie(w,CookieSession,session.Token)	
+	setCookie(w, CookieSession, session.Token)
 	http.Redirect(w, r, "/signin", http.StatusFound)
 }
 
@@ -71,12 +71,12 @@ func (u Usuarios) ProcessSignin(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
 	}
-	setCookie(w,CookieSession,session.Token)	
+	setCookie(w, CookieSession, session.Token)
 	http.Redirect(w, r, "/users/me", http.StatusFound)
 }
 
 func (u Usuarios) UsuarioAtual(w http.ResponseWriter, r *http.Request) {
-	token, erro := readCookie(r,CookieSession) 
+	token, erro := readCookie(r, CookieSession)
 	if erro != nil {
 		fmt.Println(erro)
 		http.Redirect(w, r, "/signin", http.StatusFound)
@@ -87,4 +87,19 @@ func (u Usuarios) UsuarioAtual(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/signin", http.StatusFound)
 	}
 	fmt.Fprintf(w, "Usuário atual:%s\n", user.Email)
+}
+
+func (u Usuarios) ProcessSignOut(w http.ResponseWriter, r *http.Request) {
+	token, err := readCookie(r, CookieSession)
+	if err != nil {
+		http.Redirect(w, r, "/signin", http.StatusFound)
+	}
+	err = u.SessionService.Delete(token)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
+		return
+	}
+	deleteCookie(w, token)
+	http.Redirect(w, r, "/signin", http.StatusFound)
 }
