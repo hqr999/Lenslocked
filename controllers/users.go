@@ -42,7 +42,7 @@ func (u Usuarios) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	setCookie(w, CookieSession, session.Token)
-	http.Redirect(w, r, "/signin", http.StatusFound)
+	http.Redirect(w, r, "/users/me", http.StatusFound)
 }
 
 func (u Usuarios) Signin(w http.ResponseWriter, r *http.Request) {
