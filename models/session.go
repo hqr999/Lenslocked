@@ -75,21 +75,16 @@ func (ss *SessionService) User(token string) (*User, error) {
 	tokenHash := ss.hash(token)
 	// 2. Query para a sessão com o hash
 	var user User
+
+	// 3. Fazemos um INNER JOIN 
+	//entre as tabelas sessions e users
 	linha := ss.DB.QueryRow(`
-				SELECT user_id
+				SELECT users.id,users.email,users.password_hash
 				FROM sessions 
-				WHERE token_hash = $1;
+				INNER JOIN users ON users.id = sessions.user_id
+				WHERE sessions.token_hash = $1;
 		`, tokenHash)
-	err := linha.Scan(&user.ID)
-	if err != nil {
-		return nil, fmt.Errorf("user: %w", err)
-	}
-	// 3. Usando o UserID da sessão, precisamos fazer query para aquele usuário
-	linha = ss.DB.QueryRow(`
-			SELECT email, password_hash 
-			FROM users WHERE id = $1
-		`, user.ID)
-	err = linha.Scan(&user.Email, &user.PasswordHash)
+	err := linha.Scan(&user.ID,&user.Email,&user.PasswordHash)
 	if err != nil {
 		return nil, fmt.Errorf("user: %w", err)
 	}
