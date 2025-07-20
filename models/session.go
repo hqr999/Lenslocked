@@ -52,18 +52,12 @@ func (ss *SessionService) Create(userId int) (*Session, error) {
 	//1. Tentar dar Update na sessão do usuário
 	//2. Se obtermos um erro, criamos uma nova sessão
 	linha := ss.DB.QueryRow(`
-				UPDATE sessions 
-				SET token_hash = $2
-				WHERE user_id = $1
-				RETURNING id;`, sessao.UserID, sessao.TokenHash)
+		INSERT INTO sessions
+		VALUES ($1,$2) ON CONFLICT (user_id) DO 
+		UPDATE
+		SET token_hash = $2
+		RETURNING id;`, sessao.UserID, sessao.TokenHash)
 	err = linha.Scan(&sessao.ID)
-	if err == sql.ErrNoRows {
-		linha = ss.DB.QueryRow(`
-					INSERT INTO sessions (user_id,token_hash)
-					VALUES ($1,$2)
-					RETURNING id;`, sessao.UserID, sessao.TokenHash)
-		err = linha.Scan(&sessao.ID)
-	}
 	if err != nil {
 		return nil, fmt.Errorf("create: %w", err)
 	}
@@ -76,7 +70,7 @@ func (ss *SessionService) User(token string) (*User, error) {
 	// 2. Query para a sessão com o hash
 	var user User
 
-	// 3. Fazemos um INNER JOIN 
+	// 3. Fazemos um INNER JOIN
 	//entre as tabelas sessions e users
 	linha := ss.DB.QueryRow(`
 				SELECT users.id,users.email,users.password_hash
@@ -84,7 +78,7 @@ func (ss *SessionService) User(token string) (*User, error) {
 				INNER JOIN users ON users.id = sessions.user_id
 				WHERE sessions.token_hash = $1;
 		`, tokenHash)
-	err := linha.Scan(&user.ID,&user.Email,&user.PasswordHash)
+	err := linha.Scan(&user.ID, &user.Email, &user.PasswordHash)
 	if err != nil {
 		return nil, fmt.Errorf("user: %w", err)
 	}
