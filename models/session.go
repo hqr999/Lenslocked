@@ -52,7 +52,7 @@ func (ss *SessionService) Create(userId int) (*Session, error) {
 	//1. Tentar dar Update na sessão do usuário
 	//2. Se obtermos um erro, criamos uma nova sessão
 	linha := ss.DB.QueryRow(`
-		INSERT INTO sessions
+		INSERT INTO sessions (user_id, token_hash)
 		VALUES ($1,$2) ON CONFLICT (user_id) DO 
 		UPDATE
 		SET token_hash = $2

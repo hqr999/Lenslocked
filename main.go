@@ -32,7 +32,6 @@ func main() {
 
 	//Fazendo a conexão com o Banco de Dados
 	config := models.DefaultPostrgesConfig()
-	fmt.Println(config)
 	db, err := models.Open(config)
 	if err != nil {
 		panic(err)
