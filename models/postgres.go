@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"fmt"
+	"io/fs"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/pressly/goose/v3"
@@ -48,4 +49,15 @@ func Migrando(db *sql.DB, diretorio string) error {
 		return fmt.Errorf("Problemas com migração: %w", err)
 	}
 	return nil
+}
+
+func Migrando_FS(db *sql.DB, migracoesFS fs.FS, diretorio string) error {
+	if diretorio == "" {
+			diretorio = "."
+	}
+	goose.SetBaseFS(migracoesFS)
+	defer func() {
+		goose.SetBaseFS(nil)
+	}()
+	return Migrando(db, diretorio)
 }

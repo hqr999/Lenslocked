@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/csrf"
 	"github.com/hqr999/Go-Web-Development/controllers"
+	"github.com/hqr999/Go-Web-Development/migracoes"
 	"github.com/hqr999/Go-Web-Development/models"
 	"github.com/hqr999/Go-Web-Development/templates"
 	"github.com/hqr999/Go-Web-Development/views"
@@ -39,7 +40,7 @@ func main() {
 	defer db.Close()
 
 	//Chamando a migração
-	err = models.Migrando(db, "migracoes")
+	err = models.Migrando_FS(db, migracoes.FS,".")
 	if err != nil {
 		panic(err)
 	}
