@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
+	"github.com/pressly/goose/v3"
 )
 
 // Vai abrir uma conexão SQL com o BD
@@ -34,4 +35,17 @@ type PostgresConfig struct {
 
 func (confSQL PostgresConfig) String() string {
 	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", confSQL.Host, confSQL.Port, confSQL.User, confSQL.Password, confSQL.DataBaseName, confSQL.SSLmode)
+}
+
+// Função que roda as migrações com o Goose
+func Migrando(db *sql.DB, diretorio string) error {
+	err := goose.SetDialect("postgres")
+	if err != nil {
+		return fmt.Errorf("Problemas com migração: %w", err)
+	}
+	err = goose.Up(db, diretorio)
+	if err != nil {
+		return fmt.Errorf("Problemas com migração: %w", err)
+	}
+	return nil
 }
