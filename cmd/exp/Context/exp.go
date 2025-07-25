@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"strings"
+
+	"github.com/hqr999/Go-Web-Development/contexto"
+	"github.com/hqr999/Go-Web-Development/models"
 )
 
 type ctxChave string
@@ -14,23 +16,13 @@ const (
 
 func main() {
 	ctx := context.Background()
-	//Colocamos a cor para ser azul
-	ctx = context.WithValue(ctx, corFavoritaChave, "azul")
 
-	val := ctx.Value(corFavoritaChave)
-
-	intV, ok := val.(int)
-
-	if !ok {
-		fmt.Println("Não é um inteiro")
-	} else {
-		fmt.Println(intV + 4)
+	usuario := models.User{
+		Email: "jon@calhoun.io",
 	}
 
-	strV, ok := val.(string)
-	if !ok {
-		fmt.Println("Não é uma string")
-	} else {
-		fmt.Println(strings.HasPrefix(strV, "a"))
-	}
+	ctx = contexto.WithUser(ctx, &usuario)
+
+	usuarioRecuperado := contexto.User(ctx)
+	fmt.Println(usuarioRecuperado.Email)
 }
