@@ -3,25 +3,34 @@ package main
 import (
 	"context"
 	"fmt"
+	"strings"
 )
 
-type ctxChave string 
+type ctxChave string
 
-const(
+const (
 	corFavoritaChave ctxChave = "cor favorita"
 )
 
 func main() {
-		ctx := context.Background()
-		//Colocamos a cor para ser azul
-		ctx = context.WithValue(ctx,corFavoritaChave,"azul")
+	ctx := context.Background()
+	//Colocamos a cor para ser azul
+	ctx = context.WithValue(ctx, corFavoritaChave, "azul")
 
-		
-		//Outro pacote muda a cor 
-		ctx = context.WithValue(ctx,"cor favorita","vermelho")
+	val := ctx.Value(corFavoritaChave)
 
-		val1 := ctx.Value(corFavoritaChave)
-		val2 := ctx.Value("cor favorita")
-		fmt.Println(val1,val2)
+	intV, ok := val.(int)
+
+	if !ok {
+		fmt.Println("Não é um inteiro")
+	} else {
+		fmt.Println(intV + 4)
+	}
+
+	strV, ok := val.(string)
+	if !ok {
+		fmt.Println("Não é uma string")
+	} else {
+		fmt.Println(strings.HasPrefix(strV, "a"))
+	}
 }
-
