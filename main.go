@@ -67,7 +67,10 @@ func main() {
 		http.Error(w, "Página não encontrada", http.StatusNotFound)
 	})
 
-	fmt.Println("Começando o servidor na porta :3000...")
+
+	user_middleware := controllers.MiddlewareUsuario{
+			SessionService: &sessaoServico,
+	}
 
 	csrfChave := "gFvi45R4fy5xNBlnEeZtQbfAVCYEIAUX"
 	csrfMiddleware := csrf.Protect(
@@ -77,7 +80,8 @@ func main() {
 		csrf.TrustedOrigins([]string{"localhost:3000"}),
 	)
 
-	http.ListenAndServe(":3000", csrfMiddleware(r))
+	fmt.Println("Começando o servidor na porta :3000...")
+	http.ListenAndServe(":3000", csrfMiddleware(user_middleware.SetUsuario(r)))
 }
 
 // Uncomment the TimerMiddleware func and use it above in main() to see

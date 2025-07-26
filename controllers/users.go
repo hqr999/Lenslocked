@@ -80,25 +80,12 @@ func (u Usuarios) UsuarioAtual(w http.ResponseWriter, r *http.Request) {
 	contxt := r.Context()
 	usuario := contexto.User(contxt)
 
-	if usuario != nil {
-		http.Redirect(w,r,"/signin",http.StatusFound)
+	if usuario == nil {
+		http.Redirect(w, r, "/signin", http.StatusFound)
+		return
 	}
-	
+
 	fmt.Fprintf(w, "Usuário atual:%s\n", usuario.Email)
-  /* 
-	token, erro := readCookie(r, CookieSession)
-	if erro != nil {
-		fmt.Println(erro)
-		http.Redirect(w, r, "/signin", http.StatusFound)
-		return 
-	}
-	user, err := u.SessionService.User(token)
-	if err != nil {
-		fmt.Println(err)
-		http.Redirect(w, r, "/signin", http.StatusFound)
-		return 
-	}
-	fmt.Fprintf(w, "Usuário atual:%s\n", user.Email)*/
 }
 
 func (u Usuarios) ProcessSignOut(w http.ResponseWriter, r *http.Request) {
@@ -114,4 +101,28 @@ func (u Usuarios) ProcessSignOut(w http.ResponseWriter, r *http.Request) {
 	}
 	deleteCookie(w, token)
 	http.Redirect(w, r, "/signin", http.StatusFound)
+}
+
+type MiddlewareUsuario struct {
+	SessionService *models.SessionService
+}
+
+func (us_mw MiddlewareUsuario) SetUsuario(prox http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		token, erro := readCookie(r, CookieSession)
+		if erro != nil {
+			prox.ServeHTTP(w, r)
+			return
+		}
+		user, err := us_mw.SessionService.User(token)
+		if err != nil {
+			prox.ServeHTTP(w, r)
+			return
+		}
+		contxt := r.Context()
+		contxt = contexto.WithUser(contxt, user)
+		r = r.WithContext(contxt)
+		prox.ServeHTTP(w, r)
+	})
+
 }
