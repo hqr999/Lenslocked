@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/hqr999/Go-Web-Development/contexto"
 	models "github.com/hqr999/Go-Web-Development/models"
 )
 
@@ -76,10 +77,20 @@ func (u Usuarios) ProcessSignin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u Usuarios) UsuarioAtual(w http.ResponseWriter, r *http.Request) {
+	contxt := r.Context()
+	usuario := contexto.User(contxt)
+
+	if usuario != nil {
+		http.Redirect(w,r,"/signin",http.StatusFound)
+	}
+	
+	fmt.Fprintf(w, "Usuário atual:%s\n", usuario.Email)
+  /* 
 	token, erro := readCookie(r, CookieSession)
 	if erro != nil {
 		fmt.Println(erro)
 		http.Redirect(w, r, "/signin", http.StatusFound)
+		return 
 	}
 	user, err := u.SessionService.User(token)
 	if err != nil {
@@ -87,7 +98,7 @@ func (u Usuarios) UsuarioAtual(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/signin", http.StatusFound)
 		return 
 	}
-	fmt.Fprintf(w, "Usuário atual:%s\n", user.Email)
+	fmt.Fprintf(w, "Usuário atual:%s\n", user.Email)*/
 }
 
 func (u Usuarios) ProcessSignOut(w http.ResponseWriter, r *http.Request) {
