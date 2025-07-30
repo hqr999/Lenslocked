@@ -126,3 +126,13 @@ func (us_mw MiddlewareUsuario) SetUsuario(prox http.Handler) http.Handler {
 	})
 
 }
+
+func (us_mw MiddlewareUsuario) RequireUser(prox http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		usuario := contexto.User(r.Context())
+		if usuario == nil {
+			http.Redirect(w, r, "/signin", http.StatusFound)
+		}
+		prox.ServeHTTP(w, r)
+	})
+}
