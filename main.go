@@ -75,24 +75,9 @@ func main() {
 	r.Post("/signin", usersC.ProcessSignin)
 	r.Post("/signout", usersC.ProcessSignOut)
 	r.Route("/users/me",func(r chi.Router) {
+			r.Use(user_middleware.RequireUser)
 			r.Get("/",usersC.UsuarioAtual)
-			r.Get("/hello",func(w http.ResponseWriter, r *http.Request) {
-			fmt.Fprint(w,`
-					Eu
-				SoU UMa 
-
-
-
-											StRInG V1da
-
-
-
-				L0kA
-
-
-				`)
-		})
-	})
+				})
 	//r.Get("/users/me", usersC.UsuarioAtual)
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {

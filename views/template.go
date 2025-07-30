@@ -3,12 +3,15 @@ package views
 import (
 	"bytes"
 	"fmt"
-	"github.com/gorilla/csrf"
 	"html/template"
 	"io"
 	"io/fs"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/csrf"
+	"github.com/hqr999/Go-Web-Development/contexto"
+	"github.com/hqr999/Go-Web-Development/models"
 )
 
 func ParseFS(fs fs.FS, padroes ...string) (Template, error) {
@@ -17,6 +20,9 @@ func ParseFS(fs fs.FS, padroes ...string) (Template, error) {
 		template.FuncMap{
 			"campo_csrf": func() (template.HTML, error) {
 				return "", fmt.Errorf("Função campo_csrf ainda não foi implementado")
+			},
+			"usuarioAtual": func() (template.HTML, error) {
+				return "", fmt.Errorf("Função usuarioAtual ainda não foi implementada")
 			},
 		},
 	)
@@ -65,6 +71,9 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface
 		template.FuncMap{
 			"campo_csrf": func() template.HTML {
 				return csrf.TemplateField(r)
+			},
+			"usuarioAtual": func() *models.User {
+				return contexto.User(r.Context())
 			},
 		},
 	)
