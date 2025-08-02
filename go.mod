@@ -21,6 +21,7 @@ require (
 	github.com/jackc/pgtype v1.14.0 // indirect
 	github.com/mfridman/interpolate v0.0.2 // indirect
 	github.com/sethvargo/go-retry v0.3.0 // indirect
+	github.com/wneessen/go-mail v0.6.2 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/sync v0.14.0 // indirect
 	golang.org/x/text v0.25.0 // indirect
