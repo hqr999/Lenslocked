@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/go-mail/mail"
+	"github.com/go-mail/mail/v2"
 )
 
 const (
