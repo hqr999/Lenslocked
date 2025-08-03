@@ -1,12 +1,15 @@
-# Web-Dev in Golang 
+# Lenslocker 
 
 ## Description
 
-Code that i am making as im following along Jon Calhoun course on Wbe Development in Go.
+Lenslocked is a photo sharing platform made with Go and using Tailwind as our front-end. It has migrations using Goose with Postgresql.
 
 
-## Dependencies
+## Some of our Dependencies(in progress)
 
 * https://github.com/go-chi/chi
 
 * https://github.com/cortesi/modd
+
+* https://github.com/pressly/goose
+
