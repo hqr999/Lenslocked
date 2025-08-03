@@ -47,7 +47,7 @@ type EmailServico struct {
 func (es *EmailServico) Mandar(email Email) error {
 	mensagem := mail.NewMessage()
 	mensagem.SetHeader("To", email.De)
-	es.setFrom(mensagem,email)
+	es.setFrom(mensagem, email)
 	mensagem.SetHeader("Subject", email.Assunto)
 	switch {
 	case email.Texto != "" && email.HTML != "":
@@ -66,15 +66,30 @@ func (es *EmailServico) Mandar(email Email) error {
 	return nil
 }
 
-func (es *EmailServico) setFrom(msg *mail.Message,email Email) {
-		var de string 
-		switch  {
-		case email.De != "":
-			de = email.De
-		case es.RemetentePadrao != "":
-			de = es.RemetentePadrao
+func (es *EmailServico) EsqueceuSenha(de, resetURL string) error {
+	email := Email{
+		Assunto: "Redefinir sua senha",
+		De:      de,
+		Texto:   "Para recuperar sua senha, por favor visite o link a seguir: " + resetURL,
+		HTML:    `<p>Para redefinir sua senha, por favor visite o link a seguir: <a href="` + resetURL + `">` + resetURL + `</a></p>`,
+	}
+
+	err := es.Mandar(email)
+	if err != nil {
+		return fmt.Errorf("forgot your password email: %w", err)
+	}
+	return nil
+}
+
+func (es *EmailServico) setFrom(msg *mail.Message, email Email) {
+	var de string
+	switch {
+	case email.De != "":
+		de = email.De
+	case es.RemetentePadrao != "":
+		de = es.RemetentePadrao
 	default:
-			de = RemetentePadrao
-		}
-	msg.SetHeader("from",de)
+		de = RemetentePadrao
+	}
+	msg.SetHeader("from", de)
 }
