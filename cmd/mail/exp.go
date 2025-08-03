@@ -2,39 +2,45 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"strconv"
 
-	"github.com/go-mail/mail/v2"
+	"github.com/hqr999/Go-Web-Development/models"
+	"github.com/joho/godotenv"
 )
 
-const (
-	host = "sandbox.smtp.mailtrap.io"
-	port = 587 
-	username = "79b3bee788fc95" 
-	password = "084f67c4f795be"
-)
+
+
 
 func main()  {
-	de := "test@lenslocked.com"
-	para := "jon@calhoun.io"
-	assunto := "Esse e um e-mail de teste"
-	texto := "Esse e o corpo do email"
-	html := `<h1>Ola amigo!!</h1><p>Esse e o email</p><p>Espero que goste</p>`
-
-	mensagem := mail.NewMessage()
-	mensagem.SetHeader("To",de)
-	mensagem.SetHeader("From",para)
-	mensagem.SetHeader("Subject",assunto)
-	mensagem.SetBody("text/plain",texto)
-	mensagem.AddAlternative("text/html",html)
-	mensagem.WriteTo(os.Stdout)
-	
-	dialer := mail.NewDialer(host,port,username,password)
-	erro := dialer.DialAndSend(mensagem)
-	if erro != nil {
-		panic(erro)
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatal("Erro ao carregar o arquivo .env")
 	}
-	fmt.Println("Mensagem enviada!!")
+
+	host := os.Getenv("SMTP_HOST")
+	portStr := os.Getenv("SMTP_PORT")
+	port, err := strconv.Atoi(portStr)
+	if err != nil {
+		log.Fatal("Erro converto a string da porta")
+	}
+	username := os.Getenv("SMTP_USERNAME")
+	password := os.Getenv("SMTP_PASSWORD")
+
+	email_service := models.NovoServicoEmail(models.SMTPConfig{
+			Host: host,
+			Port: port,
+			Username: username,
+			Password: password,
+	})
+	
+	err = email_service.EsqueceuSenha("jon@calhoun.io","https://lenslocked.com/reset-pw?token=abc123")
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Email enviado")
 
 
 }

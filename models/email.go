@@ -46,19 +46,18 @@ type EmailServico struct {
 
 func (es *EmailServico) Mandar(email Email) error {
 	mensagem := mail.NewMessage()
-	mensagem.SetHeader("To", email.De)
+	mensagem.SetHeader("To", email.Para)
 	es.setFrom(mensagem, email)
 	mensagem.SetHeader("Subject", email.Assunto)
 	switch {
 	case email.Texto != "" && email.HTML != "":
-		mensagem.SetBody("text/plain", email.Texto)
-		mensagem.AddAlternative("text/html", email.HTML)
+					mensagem.SetBody("text/plain", email.Texto)
+					mensagem.AddAlternative("text/html", email.HTML)
 	case email.Texto != "":
-		mensagem.SetBody("text/plain", email.Texto)
+						mensagem.SetBody("text/plain", email.Texto)
 	case email.HTML != "":
-		mensagem.AddAlternative("text/html", email.HTML)
+						mensagem.SetBody("text/html", email.HTML)
 	}
-
 	err := es.dialer.DialAndSend(mensagem)
 	if err != nil {
 		return fmt.Errorf("send: %w", err)
@@ -66,14 +65,14 @@ func (es *EmailServico) Mandar(email Email) error {
 	return nil
 }
 
-func (es *EmailServico) EsqueceuSenha(de, resetURL string) error {
+func (es *EmailServico) EsqueceuSenha(para, resetURL string) error {
 	email := Email{
 		Assunto: "Redefinir sua senha",
-		De:      de,
+		Para:    para,
 		Texto:   "Para recuperar sua senha, por favor visite o link a seguir: " + resetURL,
-		HTML:    `<p>Para redefinir sua senha, por favor visite o link a seguir: <a href="` + resetURL + `">` + resetURL + `</a></p>`,
+		HTML:    `<p>Para recuperar sua senha, porfavor visite o seguinte link: <a href="` + resetURL + `">` + resetURL + `</a></p>`,
 	}
-
+	fmt.Println(email.Para)
 	err := es.Mandar(email)
 	if err != nil {
 		return fmt.Errorf("forgot your password email: %w", err)
@@ -91,5 +90,5 @@ func (es *EmailServico) setFrom(msg *mail.Message, email Email) {
 	default:
 		de = RemetentePadrao
 	}
-	msg.SetHeader("from", de)
+	msg.SetHeader("From", de)
 }
