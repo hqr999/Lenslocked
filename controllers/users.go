@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/hqr999/Go-Web-Development/contexto"
 	models "github.com/hqr999/Go-Web-Development/models"
@@ -10,11 +11,15 @@ import (
 
 type Usuarios struct {
 	Templates struct {
-		New    Template
-		Signin Template
+		New            Template
+		Signin         Template
+		ForgotPassword Template
+		CheckYourEmail Template
 	}
-	UserService    *models.UserService
-	SessionService *models.SessionService
+	UserService          *models.UserService
+	SessionService       *models.SessionService
+	PasswordResetService *models.SenhaResetServico
+	EmailService         *models.EmailServico
 }
 
 func (u Usuarios) New(w http.ResponseWriter, r *http.Request) {
@@ -101,6 +106,46 @@ func (u Usuarios) ProcessSignOut(w http.ResponseWriter, r *http.Request) {
 	}
 	deleteCookie(w, token)
 	http.Redirect(w, r, "/signin", http.StatusFound)
+}
+
+func (u Usuarios) ForgotPassword(w http.ResponseWriter, r *http.Request) {
+	var data struct {
+		Email string
+	}
+	data.Email = r.FormValue("email")
+	u.Templates.ForgotPassword.Execute(w, r, data)
+
+}
+
+func (u Usuarios) ProcessForgotPassword(w http.ResponseWriter, r *http.Request) {
+	var data struct {
+		Email string
+	}
+	data.Email = r.FormValue("email")
+	pwReset, err := u.PasswordResetService.Cria(data.Email)
+	if err != nil {
+		//A FAZER: Lidar com outros casos no futuro.Por exemplo, se um
+		//usuário não existe com aquele endereço de e-mail
+		fmt.Println(err)
+		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
+		return
+	}
+
+	val := url.Values{
+		"token": {pwReset.Token},
+	}
+
+	resetURL := "https://localhost:3000/reset-pw?" + val.Encode()
+	err = u.EmailService.EsqueceuSenha(data.Email, resetURL)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
+		return
+	}
+	//Não renderize o token de reset aqui!!
+	//Precisamos que o usuário confirme que tem acesso à
+	//conta de email para verificar sua identidade
+	u.Templates.CheckYourEmail.Execute(w, r, data)
 }
 
 type MiddlewareUsuario struct {
