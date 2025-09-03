@@ -1,8 +1,11 @@
 {{template "header" .}}
 <div class="py-12 flex justify-center">
   <div class="px-8 py-8 bg-white rounded shadow">
-    <h1 class="pt-4 pb-8 text-center text-3xl font-bold text-gray-900">Bem Vindo de Volta!!</h1>
-    <form action="/signin" method="post">
+    <h1 class="pt-4 pb-8 text-center text-3xl font-bold text-gray-900">Esqueceu sua Senha ?</h1>
+    <p class="text-sm text-gray-600 pb-4">
+      Sem problemas. Entre com seu email abaixo e nós te enviaremos um link para resetar seu e-mail.
+    </p>
+    <form action="/forgot-pw" method="post">
       <div class="hidden">
         {{campo_csrf}}
       </div>
@@ -12,21 +15,16 @@
           class="w-full px-3 py-2 border border-gray-300 placeholder-gray-600 rounded" value="{{.Email}}" {{if not
           .Email}}autofocus{{end}} />
       </div>
-      <div class="py-2">
-        <label for="password" class="text-sm font-semibold text-gray-800">Senha</label>
-        <input name="password" id="password" type="password" placeholder="Password" required
-          class="w-full px-3 py-2 border border-gray-300 placeholder-gray-600 rounded" {{if .Email}}autofocus{{end}} />
-      </div>
       <div class="py-4">
         <button type="submit"
-          class="w-full py-4 px-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-bold text-lg">Entrar</button>
+          class="w-full py-4 px-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-bold text-lg">Reset senha</button>
       </div>
       <div class="py-2 w-full flex justify-between">
         <p class="text-xs text-gray-540">Precisa fazer uma conta ?
           <a href="/signup" class="underline">Se inscreva</a>
         </p>
         <p class="text-xs text-gray-540">
-          <a href="/forgot-pw" class="underline">Esqueceu sua senha ?</a>
+          <a href="/signin" class="underline">Lembrou sua senha ?</a>
         </p>
       </div>
     </form>
