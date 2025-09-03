@@ -17,7 +17,7 @@ const (
 type Session struct {
 	ID     int
 	UserID int
-	// Toke é somente setado quando cria-se uma nova sessão
+	// Token é somente setado quando cria-se uma nova sessão
 	//quando buscamos por uma sessão, esse campo será deixado vazio
 	//,uma vez que salvamos um token de sessão em nosso BD
 	//e nós não podemos revertê-lo para um token em texto claro.
