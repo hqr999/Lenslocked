@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/csrf"
@@ -11,9 +13,59 @@ import (
 	"github.com/hqr999/Go-Web-Development/models"
 	"github.com/hqr999/Go-Web-Development/templates"
 	"github.com/hqr999/Go-Web-Development/views"
+	"github.com/joho/godotenv"
 )
 
+type config struct {
+	PSQL models.PostgresConfig
+	SMTP models.SMTPConfig
+	CSRT struct {
+		Key           string
+		Secure        bool
+		TrustedOrigin []string
+	}
+	Server struct {
+		Address string
+	}
+}
+
+func loadEnvConfig() (config, error) {
+	var cfg config
+	err := godotenv.Load()
+	if err != nil {
+		return cfg, err
+	}
+
+	//A FAZER: Ler os valores de PSQL de uma var ENV
+	cfg.PSQL = models.DefaultPostrgesConfig()
+
+	//A FAZER: Ler os valores de SMTP de uma var ENV
+	cfg.SMTP.Host = os.Getenv("SMTP_HOST")
+	portStr := os.Getenv("SMTP_PORT")
+	cfg.SMTP.Port, err = strconv.Atoi(portStr)
+	if err != nil {
+		return cfg, nil
+	}
+	cfg.SMTP.Username = os.Getenv("SMTP_USERNAME")
+	cfg.SMTP.Password = os.Getenv("SMTP_PASSWORD")
+
+	//A FAZER: Ler os valores do servidor de uma var ENV
+	cfg.Server.Address = ":3000"
+
+	//A FAZER: Ler os valores de PSQL de uma var ENV
+	cfg.CSRT.Key = "gFvi45R4fy5xNBlnEeZtQbfAVCYEIAUX"
+	cfg.CSRT.Secure = false
+	cfg.CSRT.TrustedOrigin = append([]string{"localhost"}, []string{cfg.Server.Address}...)
+
+	return cfg, nil
+}
+
 func main() {
+		
+	cfg, err := loadEnvConfig()
+	if err != nil {
+		panic(err)
+	}
 
 	//Fazendo a conexão com o Banco de Dados
 	config := models.DefaultPostrgesConfig()
@@ -29,34 +81,41 @@ func main() {
 	}
 
 	//Chamando a migração
-	userService := models.UserService{
+	userService := &models.UserService{
 		Banco_Dados: db,
 	}
-	sessaoServico := models.SessionService{
+	sessaoServico := &models.SessionService{
 		DB: db,
 	}
 
-	//Inicializando o Middleware
-	user_middleware := controllers.MiddlewareUsuario{
-		SessionService: &sessaoServico,
+	senhaResetServ := &models.SenhaResetServico{
+		BD: db,	
 	}
 
-	csrfChave := "gFvi45R4fy5xNBlnEeZtQbfAVCYEIAUX"
+	emailServ := models.NovoServicoEmail(cfg.SMTP)
+
+	//Inicializando o Middleware
+	user_middleware := controllers.MiddlewareUsuario{
+		SessionService: sessaoServico,
+	}
+
 	csrfMiddleware := csrf.Protect(
-		[]byte(csrfChave),
+		[]byte(cfg.CSRT.Key),
 		//TODO: Consertar antes de deploy
-		csrf.Secure(false),
-		csrf.TrustedOrigins([]string{"localhost:3000"}),
+		csrf.Secure(cfg.CSRT.Secure),
+		csrf.TrustedOrigins(cfg.CSRT.TrustedOrigin),
 	)
 
 	//Iniciando os nossos controladores
 	usersC := controllers.Usuarios{
-		UserService:    &userService,
-		SessionService: &sessaoServico,
+		UserService:    userService,
+		SessionService: sessaoServico,
+		PasswordResetService: senhaResetServ,
+		EmailService: emailServ,
 	}
 	tpl_pag_inscr := views.Must(views.ParseFS(templates.FS, "signup.gohtml", "tailwind.gohtml"))
 	tpl_pag_login := views.Must(views.ParseFS(templates.FS, "signin.gohtml", "tailwind.gohtml"))
-	tpl_pag_reset_senha := views.Must(views.ParseFS(templates.FS,"forgot-pw.gohtml","tailwind.gohtml"))
+	tpl_pag_reset_senha := views.Must(views.ParseFS(templates.FS, "forgot-pw.gohtml", "tailwind.gohtml"))
 	usersC.Templates.New = tpl_pag_inscr
 	usersC.Templates.Signin = tpl_pag_login
 	usersC.Templates.ForgotPassword = tpl_pag_reset_senha
@@ -76,12 +135,12 @@ func main() {
 	r.Get("/signin", usersC.Signin)
 	r.Post("/signin", usersC.ProcessSignin)
 	r.Post("/signout", usersC.ProcessSignOut)
-	r.Get("/forgot-pw",usersC.ForgotPassword)
-	r.Post("/forgot-pw",usersC.ProcessForgotPassword)
-	r.Route("/users/me",func(r chi.Router) {
-			r.Use(user_middleware.RequireUser)
-			r.Get("/",usersC.UsuarioAtual)
-				})
+	r.Get("/forgot-pw", usersC.ForgotPassword)
+	r.Post("/forgot-pw", usersC.ProcessForgotPassword)
+	r.Route("/users/me", func(r chi.Router) {
+		r.Use(user_middleware.RequireUser)
+		r.Get("/", usersC.UsuarioAtual)
+	})
 	//r.Get("/users/me", usersC.UsuarioAtual)
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
@@ -89,8 +148,11 @@ func main() {
 	})
 
 	//Iniciando o Servidor
-	fmt.Println("Começando o servidor na porta :3000...")
-	http.ListenAndServe(":3000", r)
+	fmt.Printf("Começando o servidor na porta %s... \n",cfg.Server.Address)
+	err = http.ListenAndServe(cfg.Server.Address, r)
+	if err != nil {
+			panic(err)
+	}
 }
 
 // Uncomment the TimerMiddleware func and use it above in main() to see
