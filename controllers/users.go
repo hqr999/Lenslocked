@@ -15,6 +15,7 @@ type Usuarios struct {
 		Signin         Template
 		ForgotPassword Template
 		CheckYourEmail Template
+		ResetPassword  Template
 	}
 	UserService          *models.UserService
 	SessionService       *models.SessionService
@@ -146,6 +147,45 @@ func (u Usuarios) ProcessForgotPassword(w http.ResponseWriter, r *http.Request) 
 	//Precisamos que o usuário confirme que tem acesso à
 	//conta de email para verificar sua identidade
 	u.Templates.CheckYourEmail.Execute(w, r, data)
+}
+
+func (u Usuarios) ResetPassword(w http.ResponseWriter, r *http.Request) {
+	var data struct {
+		Token string
+	}
+	data.Token = r.FormValue("token")
+	u.Templates.ResetPassword.Execute(w, r, data)
+
+}
+
+func (u Usuarios) ProcessResetPassword(w http.ResponseWriter, r *http.Request) {
+	var data struct {
+		Token    string
+		Password string
+	}
+	data.Token = r.FormValue("token")
+	data.Password = r.FormValue("password")
+
+	user, err := u.PasswordResetService.Consome(data.Token)
+	if err != nil {
+		fmt.Println(err)
+		//A FAZER:Distinguir entre tipos de erros
+		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
+		return
+	}
+
+	//A FAZER: Atualizar a senha do usuário
+
+	//O usuário agora pode entrar porque sua senha foi atualizada
+	//Qualquer erros daqui em diante devem redirecionar o usuário a página de entrar(sign in)
+	session, err := u.SessionService.Create(user.ID)
+	if err != nil {
+		fmt.Println(err)
+		http.Redirect(w, r, "/signin", http.StatusFound)
+		return
+	}
+	setCookie(w, CookieSession, session.Token)
+	http.Redirect(w, r, "/users/me", http.StatusFound)
 }
 
 type MiddlewareUsuario struct {
