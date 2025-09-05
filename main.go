@@ -113,12 +113,16 @@ func main() {
 		PasswordResetService: senhaResetServ,
 		EmailService: emailServ,
 	}
+	
 	tpl_pag_inscr := views.Must(views.ParseFS(templates.FS, "signup.gohtml", "tailwind.gohtml"))
 	tpl_pag_login := views.Must(views.ParseFS(templates.FS, "signin.gohtml", "tailwind.gohtml"))
 	tpl_pag_reset_senha := views.Must(views.ParseFS(templates.FS, "forgot-pw.gohtml", "tailwind.gohtml"))
+	tpl_pag_check_email := views.Must(views.ParseFS(templates.FS,"check-your-email.gohtml","tailwind.gohtml"))
+	
 	usersC.Templates.New = tpl_pag_inscr
 	usersC.Templates.Signin = tpl_pag_login
 	usersC.Templates.ForgotPassword = tpl_pag_reset_senha
+	usersC.Templates.CheckYourEmail = tpl_pag_check_email
 
 	//Configurando nosso roteador e nossas rotas
 	r := chi.NewRouter()
@@ -149,6 +153,7 @@ func main() {
 
 	//Iniciando o Servidor
 	fmt.Printf("Começando o servidor na porta %s... \n",cfg.Server.Address)
+	fmt.Printf("A origem confiável está em %s... \n",cfg.CSRT.TrustedOrigin)
 	err = http.ListenAndServe(cfg.Server.Address, r)
 	if err != nil {
 			panic(err)
