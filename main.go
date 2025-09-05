@@ -55,7 +55,8 @@ func loadEnvConfig() (config, error) {
 	//A FAZER: Ler os valores de PSQL de uma var ENV
 	cfg.CSRT.Key = "gFvi45R4fy5xNBlnEeZtQbfAVCYEIAUX"
 	cfg.CSRT.Secure = false
-	cfg.CSRT.TrustedOrigin = append([]string{"localhost"}, []string{cfg.Server.Address}...)
+	tmpVar := "localhost" + cfg.Server.Address
+	cfg.CSRT.TrustedOrigin = []string{tmpVar}
 
 	return cfg, nil
 }
