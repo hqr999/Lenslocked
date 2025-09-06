@@ -56,3 +56,20 @@ func (u UserService) Autenticar(email, password string) (*User, error) {
 
 	return &usuario, nil
 }
+
+func(us *UserService) UpdatePassword(userID int,pw string) error {
+	hashedBytes, err := bcrypt.GenerateFromPassword([]byte(pw),bcrypt.DefaultCost)	
+	if err != nil {
+				return fmt.Errorf("update password: %w",err)
+	}
+	passwordHash := string(hashedBytes)
+	_,err = us.Banco_Dados.Exec(`
+			UPDATE users
+			SET password_hash = $2
+			WHERE id = $1;`,userID, passwordHash)
+	if err != nil {
+			return fmt.Errorf("update password: %w",err)
+	}
+	return nil
+
+}

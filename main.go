@@ -158,7 +158,6 @@ func main() {
 
 	//Iniciando o Servidor
 	fmt.Printf("Começando o servidor na porta %s... \n",cfg.Server.Address)
-	fmt.Printf("A origem confiável está em %s... \n",cfg.CSRT.TrustedOrigin)
 	err = http.ListenAndServe(cfg.Server.Address, r)
 	if err != nil {
 			panic(err)

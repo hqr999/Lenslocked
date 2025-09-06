@@ -174,6 +174,14 @@ func (u Usuarios) ProcessResetPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = u.UserService.UpdatePassword(user.ID, data.Password)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
+		return
+
+	}
+
 	//A FAZER: Atualizar a senha do usuário
 
 	//O usuário agora pode entrar porque sua senha foi atualizada
