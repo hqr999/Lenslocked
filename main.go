@@ -117,13 +117,15 @@ func main() {
 	
 	tpl_pag_inscr := views.Must(views.ParseFS(templates.FS, "signup.gohtml", "tailwind.gohtml"))
 	tpl_pag_login := views.Must(views.ParseFS(templates.FS, "signin.gohtml", "tailwind.gohtml"))
-	tpl_pag_reset_senha := views.Must(views.ParseFS(templates.FS, "forgot-pw.gohtml", "tailwind.gohtml"))
+	tpl_pag_esq_senha := views.Must(views.ParseFS(templates.FS, "forgot-pw.gohtml", "tailwind.gohtml"))
 	tpl_pag_check_email := views.Must(views.ParseFS(templates.FS,"check-your-email.gohtml","tailwind.gohtml"))
+	tpl_pag_reset_senha := views.Must(views.ParseFS(templates.FS,"reset-pw.gohtml","tailwind.gohtml"))
 	
 	usersC.Templates.New = tpl_pag_inscr
 	usersC.Templates.Signin = tpl_pag_login
-	usersC.Templates.ForgotPassword = tpl_pag_reset_senha
+	usersC.Templates.ForgotPassword = tpl_pag_esq_senha 
 	usersC.Templates.CheckYourEmail = tpl_pag_check_email
+	usersC.Templates.ResetPassword = tpl_pag_reset_senha
 
 	//Configurando nosso roteador e nossas rotas
 	r := chi.NewRouter()
@@ -142,6 +144,8 @@ func main() {
 	r.Post("/signout", usersC.ProcessSignOut)
 	r.Get("/forgot-pw", usersC.ForgotPassword)
 	r.Post("/forgot-pw", usersC.ProcessForgotPassword)
+	r.Get("/reset-pw", usersC.ResetPassword)
+	r.Post("/reset-pw", usersC.ProcessResetPassword)
 	r.Route("/users/me", func(r chi.Router) {
 		r.Use(user_middleware.RequireUser)
 		r.Get("/", usersC.UsuarioAtual)
