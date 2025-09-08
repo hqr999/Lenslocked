@@ -43,7 +43,7 @@ func (servico *SenhaResetServico) Cria(email string) (*SenhaReset, error) {
 	email = strings.ToLower(email)
 	var userID int
 	linha := servico.BD.QueryRow(`
-			SELECT id FROM users WHERE email = $1
+			SELECT id FROM users WHERE email = $1;
 		`, email)
 	err := linha.Scan(&userID)
 	if err != nil {
@@ -94,12 +94,12 @@ func (servico *SenhaResetServico) Consome(token string) (*User, error) {
 	var senhaReset SenhaReset
 	linha := servico.BD.QueryRow(`
 				SELECT password_resets.id,
-							 password_resets.expires_at,
-							 users.id,
-							 users.email,
-							 user.password_hash
+						password_resets.expires_at,
+						users.id,
+						users.email,
+						users.password_hash
 			FROM password_resets
-				INNER JOIN ON users.id = password_resets.user_id
+				JOIN users ON users.id = password_resets.user_id
 			WHERE password_resets.token_hash = $1;`, tokenHash)
 	err := linha.Scan(&senhaReset.ID, &senhaReset.ExpiraEm,
 		&usu.ID, &usu.Email, &usu.PasswordHash)
