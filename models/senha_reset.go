@@ -100,7 +100,7 @@ func (servico *SenhaResetServico) Consome(token string) (*User, error) {
 							 user.password_hash
 			FROM password_resets
 				INNER JOIN ON users.id = password_resets.user_id
-			WHERE password_resets.token_hash = $1`, tokenHash)
+			WHERE password_resets.token_hash = $1;`, tokenHash)
 	err := linha.Scan(&senhaReset.ID, &senhaReset.ExpiraEm,
 		&usu.ID, &usu.Email, &usu.PasswordHash)
 	if err != nil {
@@ -125,7 +125,7 @@ func (servico *SenhaResetServico) hash(token string) string {
 func (servico *SenhaResetServico) delete(id int) error {
 	_, err := servico.BD.Exec(`
 				DELETE FROM password_resets
-				WHERE id = $1`, id)
+				WHERE id = $1;`, id)
 	if err != nil {
 		return fmt.Errorf("delete: %w", err)
 	}
