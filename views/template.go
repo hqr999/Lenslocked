@@ -24,6 +24,13 @@ func ParseFS(fs fs.FS, padroes ...string) (Template, error) {
 			"usuarioAtual": func() (template.HTML, error) {
 				return "", fmt.Errorf("Função usuarioAtual ainda não foi implementada")
 			},
+			"erros": func () []string {
+					return []string {
+						"Não faça isso!",
+						"E-mail já está associado com outra conta",
+						"Algo deu errado",
+				}
+			},
 		},
 	)
 
