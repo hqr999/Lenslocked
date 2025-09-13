@@ -33,12 +33,15 @@ func (u Usuarios) New(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u Usuarios) Create(w http.ResponseWriter, r *http.Request) {
-	email := r.FormValue("email")
-	password := r.FormValue("password")
-	user, err := u.UserService.Criar(email, password)
+	var data struct {
+		Email    string
+		Password string
+	}
+	data.Email = r.FormValue("email")
+	data.Password = r.FormValue("password")
+	user, err := u.UserService.Criar(data.Email, data.Password)
 	if err != nil {
-		fmt.Println()
-		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
+		u.Templates.New.Execute(w, r, data, err)
 		return
 	}
 	session, err := u.SessionService.Create(user.ID)

@@ -24,12 +24,8 @@ func ParseFS(fs fs.FS, padroes ...string) (Template, error) {
 			"usuarioAtual": func() (template.HTML, error) {
 				return "", fmt.Errorf("Função usuarioAtual ainda não foi implementada")
 			},
-			"erros": func () []string {
-					return []string {
-						"Não faça isso!",
-						"E-mail já está associado com outra conta",
-						"Algo deu errado",
-				}
+			"erros": func() []string {
+				return nil
 			},
 		},
 	)
@@ -65,7 +61,7 @@ type Template struct {
 	html_tmpl *template.Template
 }
 
-func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface{}) {
+func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface{}, erros ...error) {
 	tpl, err := t.html_tmpl.Clone()
 
 	if err != nil {
@@ -81,6 +77,13 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface
 			},
 			"usuarioAtual": func() *models.User {
 				return contexto.User(r.Context())
+			},
+			"erros": func() []string {
+				var errMessage []string
+				for _, err := range erros {
+					errMessage = append(errMessage, err.Error())
+				}
+				return errMessage
 			},
 		},
 	)
