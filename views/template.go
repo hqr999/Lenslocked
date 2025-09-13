@@ -2,6 +2,7 @@ package views
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"html/template"
 	"io"
@@ -13,6 +14,10 @@ import (
 	"github.com/hqr999/Go-Web-Development/contexto"
 	"github.com/hqr999/Go-Web-Development/models"
 )
+
+type public interface {
+	Public() string
+}
 
 func ParseFS(fs fs.FS, padroes ...string) (Template, error) {
 	tpl := template.New(padroes[0])
@@ -69,7 +74,7 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface
 		http.Error(w, "Houve um erro renderizando a página", http.StatusInternalServerError)
 		return
 	}
-
+	errMsgs := errMessages(erros...)
 	tpl = tpl.Funcs(
 		template.FuncMap{
 			"campo_csrf": func() template.HTML {
@@ -79,11 +84,7 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface
 				return contexto.User(r.Context())
 			},
 			"erros": func() []string {
-				var errMessage []string
-				for _, err := range erros {
-					errMessage = append(errMessage, err.Error())
-				}
-				return errMessage
+					return errMsgs				
 			},
 		},
 	)
@@ -98,5 +99,19 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface
 		return //Para de rodar o código aqui
 	}
 	io.Copy(w, &buf)
+
+}
+
+func errMessages(errs ...error) []string {
+	var msgErrs []string
+	for _, err := range errs {
+		var pubErr public
+		if errors.As(err, &pubErr) {
+			msgErrs = append(msgErrs, pubErr.Public())
+		} else {
+			msgErrs = append(msgErrs, "Alguma coisa deu errado")
+		}
+	}
+	return msgErrs
 
 }
