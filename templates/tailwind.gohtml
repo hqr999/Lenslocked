@@ -37,12 +37,12 @@
 
   <!-- Alertas -->
   <div class="py-4 px-2">
-      {{range erros}}
-    <div class="flex bg-red-100 rounded px-2 py-2 text-red-800 mb-2">
+    {{range erros}}
+    <div class="flex closeable bg-red-100 rounded px-2 py-2 text-red-800 mb-2">
       <div class="flex-grow">
-          {{.}}
-        </div>
-      <a href="#">
+        {{.}}
+      </div>
+      <a href="#" onclick="closeAlert(event)">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
           class="w-6 h-6">
           <path stroke-linecap="round" stroke-linejoin="round"
@@ -53,12 +53,19 @@
   </div>
   {{end}}
   {{end}}
+
+
   {{define "footer"}}
+  <script>
+    function closeAlert(event) {
+      let closeable = event.target.closest(".closeable");
+      closeable.remove();
+    }
+  </script>
   <footer class="fixed bottom-0 py-5 w-full bg-gradient-to-r from-blue-800 to-indigo-800 text-center text-white">
     &copy; 2025 feito por Henrique Reuter
   </footer>
-
-  {{end}}
 </body>
 
 </html>
+{{end}}
