@@ -2,10 +2,17 @@ package models
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 
+	"github.com/jackc/pgconn"
+	"github.com/jackc/pgerrcode"
 	"golang.org/x/crypto/bcrypt"
+)
+
+var (
+	ErrEmailTaken = errors.New("models: endereço de email já em uso")
 )
 
 type User struct {
@@ -32,6 +39,14 @@ func (u *UserService) Criar(email, password string) (*User, error) {
 			VALUES ($1, $2) RETURNING id`, email, passwordHash)
 	erro = col.Scan(&usuario.ID)
 	if erro != nil {
+		var pgError *pgconn.PgError
+		if errors.As(erro, &pgError) {
+			if pgError.Code == pgerrcode.UniqueViolation {
+				return nil, ErrEmailTaken
+			}
+		}
+		fmt.Printf("Type = %T\n", erro)
+		fmt.Printf("Error = %v\n", erro)
 		return nil, fmt.Errorf("Usuário criado: %w", erro)
 	}
 	return &usuario, nil
@@ -57,18 +72,18 @@ func (u UserService) Autenticar(email, password string) (*User, error) {
 	return &usuario, nil
 }
 
-func(us *UserService) UpdatePassword(userID int,pw string) error {
-	hashedBytes, err := bcrypt.GenerateFromPassword([]byte(pw),bcrypt.DefaultCost)	
+func (us *UserService) UpdatePassword(userID int, pw string) error {
+	hashedBytes, err := bcrypt.GenerateFromPassword([]byte(pw), bcrypt.DefaultCost)
 	if err != nil {
-				return fmt.Errorf("update password: %w",err)
+		return fmt.Errorf("update password: %w", err)
 	}
 	passwordHash := string(hashedBytes)
-	_,err = us.Banco_Dados.Exec(`
+	_, err = us.Banco_Dados.Exec(`
 			UPDATE users
 			SET password_hash = $2
-			WHERE id = $1;`,userID, passwordHash)
+			WHERE id = $1;`, userID, passwordHash)
 	if err != nil {
-			return fmt.Errorf("update password: %w",err)
+		return fmt.Errorf("update password: %w", err)
 	}
 	return nil
 
