@@ -6,6 +6,7 @@ import (
 	"net/url"
 
 	"github.com/hqr999/Go-Web-Development/contexto"
+	"github.com/hqr999/Go-Web-Development/errors"
 	models "github.com/hqr999/Go-Web-Development/models"
 )
 
@@ -41,6 +42,9 @@ func (u Usuarios) Create(w http.ResponseWriter, r *http.Request) {
 	data.Password = r.FormValue("password")
 	user, err := u.UserService.Criar(data.Email, data.Password)
 	if err != nil {
+		if errors.Is(err,models.ErrEmailTaken){
+				err = errors.Public(err,"O endereço de e-mail já possui uma conta associada a ele")
+		}
 		u.Templates.New.Execute(w, r, data, err)
 		return
 	}
