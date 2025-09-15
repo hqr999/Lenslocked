@@ -11,9 +11,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var (
-	ErrEmailTaken = errors.New("models: endereço de email já em uso")
-)
 
 type User struct {
 	ID           int

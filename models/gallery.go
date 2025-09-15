@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 )
 
@@ -26,4 +27,22 @@ func (gs GalleryService) Create(title string, userID int) (*Gallery, error) {
 	}
 
 	return &galeria, nil
+}
+
+func (gs GalleryService) ByID(id int) (*Gallery, error) {
+	//A FAZER:Validação para o ID 
+	galeria := Gallery{ID: id}
+
+	linha := gs.BD.QueryRow(`
+			SELECT title, user_id
+			FROM galleries
+			WHERE id = $1;`, galeria.ID)
+	err := linha.Scan(&galeria.Title,&galeria.UserID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows){
+				return nil, ErrNotFound 
+		}
+		return nil,fmt.Errorf("query gallery by id: %w",err)
+	}
+	return &galeria,nil 
 }
