@@ -9,5 +9,5 @@ import "embed"
 //E execute de outra lugar no sistema
 
 
-//go:embed *.gohtml
+//go:embed *
 var FS embed.FS

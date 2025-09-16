@@ -62,7 +62,7 @@ func loadEnvConfig() (config, error) {
 }
 
 func main() {
-		
+
 	cfg, err := loadEnvConfig()
 	if err != nil {
 		panic(err)
@@ -90,10 +90,13 @@ func main() {
 	}
 
 	senhaResetServ := &models.SenhaResetServico{
-		BD: db,	
+		BD: db,
 	}
 
 	emailServ := models.NovoServicoEmail(cfg.SMTP)
+	galeriaServ := &models.GalleryService{
+		BD: db,
+	}
 
 	//Inicializando o Middleware
 	user_middleware := controllers.MiddlewareUsuario{
@@ -109,23 +112,29 @@ func main() {
 
 	//Iniciando os nossos controladores
 	usersC := controllers.Usuarios{
-		UserService:    userService,
-		SessionService: sessaoServico,
+		UserService:          userService,
+		SessionService:       sessaoServico,
 		PasswordResetService: senhaResetServ,
-		EmailService: emailServ,
+		EmailService:         emailServ,
 	}
-	
-	tpl_pag_inscr := views.Must(views.ParseFS(templates.FS, "signup.gohtml", "tailwind.gohtml"))
-	tpl_pag_login := views.Must(views.ParseFS(templates.FS, "signin.gohtml", "tailwind.gohtml"))
-	tpl_pag_esq_senha := views.Must(views.ParseFS(templates.FS, "forgot-pw.gohtml", "tailwind.gohtml"))
-	tpl_pag_check_email := views.Must(views.ParseFS(templates.FS,"check-your-email.gohtml","tailwind.gohtml"))
-	tpl_pag_reset_senha := views.Must(views.ParseFS(templates.FS,"reset-pw.gohtml","tailwind.gohtml"))
-	
+
+	galleriecC := controllers.Galleries{
+		GalleryService: galeriaServ,
+	}
+
+	tpl_pag_inscr := views.Must(views.ParseFS(templates.FS, "signup.gohtml", "tailwind.gohtml",))
+	tpl_pag_login := views.Must(views.ParseFS(templates.FS, "signin.gohtml", "tailwind.gohtml",))
+	tpl_pag_esq_senha := views.Must(views.ParseFS(templates.FS, "forgot-pw.gohtml", "tailwind.gohtml",))
+	tpl_pag_check_email := views.Must(views.ParseFS(templates.FS, "check-your-email.gohtml", "tailwind.gohtml",))
+	tpl_pag_reset_senha := views.Must(views.ParseFS(templates.FS, "reset-pw.gohtml", "tailwind.gohtml",))
+	tpl_nova_pag_gal := views.Must(views.ParseFS(templates.FS, "galleries/new.gohtml", "tailwind.gohtml",))
+
 	usersC.Templates.New = tpl_pag_inscr
 	usersC.Templates.Signin = tpl_pag_login
-	usersC.Templates.ForgotPassword = tpl_pag_esq_senha 
+	usersC.Templates.ForgotPassword = tpl_pag_esq_senha
 	usersC.Templates.CheckYourEmail = tpl_pag_check_email
 	usersC.Templates.ResetPassword = tpl_pag_reset_senha
+	galleriecC.Templates.New = tpl_nova_pag_gal
 
 	//Configurando nosso roteador e nossas rotas
 	r := chi.NewRouter()
@@ -150,6 +159,7 @@ func main() {
 		r.Use(user_middleware.RequireUser)
 		r.Get("/", usersC.UsuarioAtual)
 	})
+	r.Get("/galleries/new", galleriecC.New)
 	//r.Get("/users/me", usersC.UsuarioAtual)
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
@@ -157,10 +167,10 @@ func main() {
 	})
 
 	//Iniciando o Servidor
-	fmt.Printf("Começando o servidor na porta %s... \n",cfg.Server.Address)
+	fmt.Printf("Começando o servidor na porta %s... \n", cfg.Server.Address)
 	err = http.ListenAndServe(cfg.Server.Address, r)
 	if err != nil {
-			panic(err)
+		panic(err)
 	}
 }
 

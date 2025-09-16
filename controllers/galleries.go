@@ -7,10 +7,10 @@ import (
 )
 
 type Galleries struct {
-		Template struct {
+		 Templates struct {
 			New Template
 	}
-	GallryService *models.GalleryService 
+	GalleryService *models.GalleryService 
 }
 
 func (gal Galleries) New(w http.ResponseWriter, r *http.Request){
@@ -19,6 +19,6 @@ func (gal Galleries) New(w http.ResponseWriter, r *http.Request){
 	}
 
 	data.Title = r.FormValue("title")
-	gal.Template.New.Execute(w,r,data)
+	gal.Templates.New.Execute(w,r,data)
 
 }

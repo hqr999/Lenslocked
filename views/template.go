@@ -9,6 +9,7 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"path"
 
 	"github.com/gorilla/csrf"
 	"github.com/hqr999/Go-Web-Development/contexto"
@@ -19,8 +20,16 @@ type public interface {
 	Public() string
 }
 
+func Must(te Template, err error) Template {
+	if err != nil {
+		panic(err)
+	}
+
+	return te
+}
+
 func ParseFS(fs fs.FS, padroes ...string) (Template, error) {
-	tpl := template.New(padroes[0])
+	tpl := template.New(path.Base(padroes[0]))
 	tpl = tpl.Funcs(
 		template.FuncMap{
 			"campo_csrf": func() (template.HTML, error) {
@@ -39,28 +48,12 @@ func ParseFS(fs fs.FS, padroes ...string) (Template, error) {
 	if err != nil {
 		return Template{}, fmt.Errorf("Parsisng template: %w", err)
 	}
-	return Template{tpl}, nil
+	return Template{
+		html_tmpl: tpl,
+	}, nil
 
 }
 
-func Must(te Template, err error) Template {
-	if err != nil {
-		panic(err)
-	}
-
-	return te
-}
-
-func ParseT(cam_arq string) (Template, error) {
-	tpl, err := template.ParseFiles(cam_arq)
-
-	if err != nil {
-		return Template{}, fmt.Errorf("Parsisng template: %w", err)
-	}
-
-	return Template{tpl}, nil
-
-}
 
 type Template struct {
 	html_tmpl *template.Template
