@@ -49,7 +49,7 @@ func (gs GalleryService) ByID(id int) (*Gallery, error) {
 
 func (gs *GalleryService) ByUserID(userID int) ([]Gallery, error) {
 	linhas, erros := gs.BD.Query(`
-				SELECT * FROM galleries
+				SELECT id, title FROM galleries
 				WHERE user_id = $1;`, userID)
 
 	if erros != nil {

@@ -130,6 +130,7 @@ func main() {
 	tpl_pag_reset_senha := views.Must(views.ParseFS(templates.FS, "reset-pw.gohtml", "tailwind.gohtml"))
 	tpl_nova_pag_gal := views.Must(views.ParseFS(templates.FS, "galleries/new.gohtml", "tailwind.gohtml"))
 	tpl_pag_edit_gal := views.Must(views.ParseFS(templates.FS,"galleries/edit.gohtml","tailwind.gohtml"))
+	tpl_pag_index_gal := views.Must(views.ParseFS(templates.FS,"galleries/index.gohtml","tailwind.gohtml"))
 
 	usersC.Templates.New = tpl_pag_inscr
 	usersC.Templates.Signin = tpl_pag_login
@@ -138,6 +139,7 @@ func main() {
 	usersC.Templates.ResetPassword = tpl_pag_reset_senha
 	galleriecC.Templates.New = tpl_nova_pag_gal
 	galleriecC.Templates.Edit = tpl_pag_edit_gal
+	galleriecC.Templates.Index = tpl_pag_index_gal 
 
 	//Configurando nosso roteador e nossas rotas
 	r := chi.NewRouter()

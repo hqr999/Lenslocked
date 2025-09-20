@@ -120,6 +120,7 @@ func (gal Galleries) Index(w http.ResponseWriter, r *http.Request) {
 	us := contexto.User(r.Context())
 	gals, err := gal.GalleryService.ByUserID(us.ID)
 	if err != nil {
+		fmt.Println(err)
 		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
 		return
 	}
