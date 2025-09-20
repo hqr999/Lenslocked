@@ -13,8 +13,9 @@ import (
 
 type Galleries struct {
 	Templates struct {
-		New  Template
-		Edit Template
+		New   Template
+		Edit  Template
+		Index Template
 	}
 	GalleryService *models.GalleryService
 }
@@ -100,9 +101,32 @@ func (gal Galleries) Update(w http.ResponseWriter, r *http.Request) {
 	gallery.Title = r.FormValue("title")
 	err = gal.GalleryService.Update(gallery)
 	if err != nil {
-		http.Error(w,"Alguma coisa deu errado",http.StatusInternalServerError)
+		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
 	}
 
 	edit_caminho := fmt.Sprintf("/galleries/%d/edit", gallery.ID)
 	http.Redirect(w, r, edit_caminho, http.StatusFound)
+}
+
+func (gal Galleries) Index(w http.ResponseWriter, r *http.Request) {
+	type Gallery struct {
+		ID    int
+		Title string
+	}
+
+	var data struct {
+		Galerias []Gallery
+	}
+	us := contexto.User(r.Context())
+	gals, err := gal.GalleryService.ByUserID(us.ID)
+	if err != nil {
+		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
+		return
+	}
+
+	for _, gal_key := range gals {
+		data.Galerias = append(data.Galerias, Gallery{gal_key.ID, gal_key.Title})
+
+	}
+	gal.Templates.Index.Execute(w, r, data)
 }

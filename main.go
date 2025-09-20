@@ -166,6 +166,7 @@ func main() {
 	r.Route("/galleries", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
 			r.Use(user_middleware.RequireUser)
+			r.Get("/",galleriecC.Index)
 			r.Get("/new", galleriecC.New)
 			r.Post("/",galleriecC.Create)
 			r.Get("/{id}/edit", galleriecC.Edit)
