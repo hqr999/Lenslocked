@@ -2,9 +2,45 @@
 
 <div class="p-8 w-full">
   <h1 class="pt-4 pb-8 text-3xl font-bold text-gray-800">
-      Minhas Galerias
+    Minhas Galerias
   </h1>
   <!--A FAZER: Adicionar Código para renderizar as Galerias-->
+  <table class="w-full table-fixed">
+    <thead>
+      <tr>
+        <th class="p-2 text-left w-24">ID</th>
+        <th class="p-2 text-left">Título</th>
+        <th class="p-2 text-left w-96">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .Galerias}}
+      <tr class="border">
+        <td class="p-2 border">{{.ID}}</td>
+        <td class="p-2 border">{{.Title}}</td>
+        <td class="p-2 border flex space-x-3">
+          <a href="/galleries/{{.ID}}"
+            class="py-1 px-2 bg-blue-100 hover:bg-blue-200 border border-blue-600 text-xs text-blue-600 rounded">Ver</a>
+          <a href="/galleries/{{.ID}}/edit"
+            class="py-1 px-2 bg-yellow-100 hover:bg-yellow-200 border border-yellow-600 text-xs text-yellow-600 rounded">Editar</a>
+          <form action="/galleries/{{.ID}}/delete" method="post"
+            onsubmit="return confirm('Você quer realmente deletar essa Galeria ?')">
+            {{campo_csrf}}
+            <button type="submit"
+              class="py-1 px-2 bg-red-100 hover:bg-red-200 border border-red-600 text-xs text-red-600 rounded">
+              Deletar
+            </button>
+          </form>
+        </td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+  <div class="py-4">
+    <a href="/galleries/new" class="py-2 px-8 bg-indigo-600 hover:bg-indigo-700 text-lg text-white font-bold rounded">
+      Nova Galeria
+    </a>
+  </div>
 </div>
 
 
