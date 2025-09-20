@@ -1,1 +1,23 @@
-<h1>Cria nova galeria</h1>
+{{template "header" .}}
+<div class="px-8 w-full">
+  <h1 class="pt-4 pb-8 text-3xl font-bold text-gray-800">
+    Criar uma nova Galeria
+  </h1>
+  <form action="/galleries" method="post">
+    <div class="hidden">
+      {{campo_csrf}}
+    </div>
+    <div class="py-2">
+      <label for="title" class="text-sm font-semibold text-gray-800">Nome da Galeria</label>
+      <input name="title" id="title" type="text" placeholder="Título" required
+        class="w-full px-3 py-2 border border-gray-300 placeholder-gray-600 rounded" value="{{.Title}}" />
+    </div>
+    <div class="py-4">
+      <button type="submit"
+        class="py-2 px-8 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-bold text-lg">Criar</button>
+    </div>
+  </form>
+</div>
+
+
+{{template "footer" .}}
