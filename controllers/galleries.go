@@ -56,11 +56,13 @@ func (gal Galleries) Edit(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if errors.Is(err, models.ErrNotFound) {
 			http.Error(w, "Galeria não encontrada", http.StatusNotFound)
+			return 
 		}
 		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
+		return
 	}
 	usuario := contexto.User(r.Context())
-	if gallery.ID != usuario.ID {
+	if gallery.UserID != usuario.ID {
 		http.Error(w, "Você não está autorizado para editar essa galeria", http.StatusForbidden)
 		return
 	}

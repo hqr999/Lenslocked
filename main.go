@@ -129,6 +129,7 @@ func main() {
 	tpl_pag_check_email := views.Must(views.ParseFS(templates.FS, "check-your-email.gohtml", "tailwind.gohtml"))
 	tpl_pag_reset_senha := views.Must(views.ParseFS(templates.FS, "reset-pw.gohtml", "tailwind.gohtml"))
 	tpl_nova_pag_gal := views.Must(views.ParseFS(templates.FS, "galleries/new.gohtml", "tailwind.gohtml"))
+	tpl_pag_edit_gal := views.Must(views.ParseFS(templates.FS,"galleries/edit.gohtml","tailwind.gohtml"))
 
 	usersC.Templates.New = tpl_pag_inscr
 	usersC.Templates.Signin = tpl_pag_login
@@ -136,6 +137,7 @@ func main() {
 	usersC.Templates.CheckYourEmail = tpl_pag_check_email
 	usersC.Templates.ResetPassword = tpl_pag_reset_senha
 	galleriecC.Templates.New = tpl_nova_pag_gal
+	galleriecC.Templates.Edit = tpl_pag_edit_gal
 
 	//Configurando nosso roteador e nossas rotas
 	r := chi.NewRouter()
@@ -166,6 +168,7 @@ func main() {
 			r.Use(user_middleware.RequireUser)
 			r.Get("/new", galleriecC.New)
 			r.Post("/",galleriecC.Create)
+			r.Get("/{id}/edit", galleriecC.Edit)
 		})
 	})
 	//r.Get("/users/me", usersC.UsuarioAtual)
