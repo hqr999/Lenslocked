@@ -108,6 +108,7 @@ func main() {
 		//TODO: Consertar antes de deploy
 		csrf.Secure(cfg.CSRT.Secure),
 		csrf.TrustedOrigins(cfg.CSRT.TrustedOrigin),
+		csrf.Path("/"),
 	)
 
 	//Iniciando os nossos controladores
@@ -122,12 +123,12 @@ func main() {
 		GalleryService: galeriaServ,
 	}
 
-	tpl_pag_inscr := views.Must(views.ParseFS(templates.FS, "signup.gohtml", "tailwind.gohtml",))
-	tpl_pag_login := views.Must(views.ParseFS(templates.FS, "signin.gohtml", "tailwind.gohtml",))
-	tpl_pag_esq_senha := views.Must(views.ParseFS(templates.FS, "forgot-pw.gohtml", "tailwind.gohtml",))
-	tpl_pag_check_email := views.Must(views.ParseFS(templates.FS, "check-your-email.gohtml", "tailwind.gohtml",))
-	tpl_pag_reset_senha := views.Must(views.ParseFS(templates.FS, "reset-pw.gohtml", "tailwind.gohtml",))
-	tpl_nova_pag_gal := views.Must(views.ParseFS(templates.FS, "galleries/new.gohtml", "tailwind.gohtml",))
+	tpl_pag_inscr := views.Must(views.ParseFS(templates.FS, "signup.gohtml", "tailwind.gohtml"))
+	tpl_pag_login := views.Must(views.ParseFS(templates.FS, "signin.gohtml", "tailwind.gohtml"))
+	tpl_pag_esq_senha := views.Must(views.ParseFS(templates.FS, "forgot-pw.gohtml", "tailwind.gohtml"))
+	tpl_pag_check_email := views.Must(views.ParseFS(templates.FS, "check-your-email.gohtml", "tailwind.gohtml"))
+	tpl_pag_reset_senha := views.Must(views.ParseFS(templates.FS, "reset-pw.gohtml", "tailwind.gohtml"))
+	tpl_nova_pag_gal := views.Must(views.ParseFS(templates.FS, "galleries/new.gohtml", "tailwind.gohtml"))
 
 	usersC.Templates.New = tpl_pag_inscr
 	usersC.Templates.Signin = tpl_pag_login
@@ -159,7 +160,13 @@ func main() {
 		r.Use(user_middleware.RequireUser)
 		r.Get("/", usersC.UsuarioAtual)
 	})
-	r.Get("/galleries/new", galleriecC.New)
+
+	r.Route("/galleries", func(r chi.Router) {
+		r.Group(func(r chi.Router) {
+			r.Use(user_middleware.RequireUser)
+			r.Get("/new", galleriecC.New)
+		})
+	})
 	//r.Get("/users/me", usersC.UsuarioAtual)
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
