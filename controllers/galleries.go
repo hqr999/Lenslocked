@@ -42,8 +42,8 @@ func (gal Galleries) Create(w http.ResponseWriter, r *http.Request) {
 		gal.Templates.New.Execute(w, r, data, err)
 		return
 	}
-	camEditar := fmt.Sprintf("/galleries/%d/edit", gl.ID)
-	http.Redirect(w, r, camEditar, http.StatusFound)
+	edit_caminho := fmt.Sprintf("/galleries/%d/edit", gl.ID)
+	http.Redirect(w, r, edit_caminho, http.StatusFound)
 }
 
 func (gal Galleries) Edit(w http.ResponseWriter, r *http.Request) {
@@ -56,7 +56,7 @@ func (gal Galleries) Edit(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if errors.Is(err, models.ErrNotFound) {
 			http.Error(w, "Galeria não encontrada", http.StatusNotFound)
-			return 
+			return
 		}
 		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
 		return
@@ -73,6 +73,36 @@ func (gal Galleries) Edit(w http.ResponseWriter, r *http.Request) {
 	data.ID = gallery.ID
 	data.Title = gallery.Title
 
-	gal.Templates.Edit.Execute(w,r,data)
+	gal.Templates.Edit.Execute(w, r, data)
 
+}
+
+func (gal Galleries) Update(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		http.Error(w, "ID inválida", http.StatusNotFound)
+		return
+	}
+	gallery, err := gal.GalleryService.ByID(id)
+	if err != nil {
+		if errors.Is(err, models.ErrNotFound) {
+			http.Error(w, "Galeria não encontrada", http.StatusNotFound)
+			return
+		}
+		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
+		return
+	}
+	usuario := contexto.User(r.Context())
+	if gallery.UserID != usuario.ID {
+		http.Error(w, "Você não está autorizado para editar essa galeria", http.StatusForbidden)
+		return
+	}
+	gallery.Title = r.FormValue("title")
+	err = gal.GalleryService.Update(gallery)
+	if err != nil {
+		http.Error(w,"Alguma coisa deu errado",http.StatusInternalServerError)
+	}
+
+	edit_caminho := fmt.Sprintf("/galleries/%d/edit", gallery.ID)
+	http.Redirect(w, r, edit_caminho, http.StatusFound)
 }
