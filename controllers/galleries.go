@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"math/rand/v2"
 	"net/http"
 	"strconv"
 
@@ -16,6 +17,7 @@ type Galleries struct {
 		New   Template
 		Edit  Template
 		Index Template
+		Show  Template
 	}
 	GalleryService *models.GalleryService
 }
@@ -130,4 +132,38 @@ func (gal Galleries) Index(w http.ResponseWriter, r *http.Request) {
 
 	}
 	gal.Templates.Index.Execute(w, r, data)
+}
+
+func (gal Galleries) Show(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		http.Error(w, "IP inválido", http.StatusNotFound)
+		return
+	}
+	gallery, err := gal.GalleryService.ByID(id)
+	if err != nil {
+		if errors.Is(err, models.ErrNotFound) {
+			http.Error(w, "Galeria não encontrada", http.StatusNotFound)
+			return
+		}
+		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
+		return
+	}
+
+	var data struct {
+		ID     int
+		Title  string
+		Images []string
+	}
+
+	data.ID = gallery.ID
+	data.Title = gallery.Title
+	for i := 0; i < 20; i++ {
+		largura, altura := rand.IntN(500)+200, rand.IntN(500)+200
+		catImageUrl := fmt.Sprintf("https://palcekitten.com/%d/%d", largura, altura)
+		data.Images = append(data.Images, catImageUrl)
+
+	}
+	gal.Templates.Show.Execute(w, r, data)
+
 }
