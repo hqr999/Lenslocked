@@ -160,7 +160,7 @@ func (gal Galleries) Show(w http.ResponseWriter, r *http.Request) {
 	data.Title = gallery.Title
 	for i := 0; i < 20; i++ {
 		largura, altura := rand.IntN(500)+200, rand.IntN(500)+200
-		catImageUrl := fmt.Sprintf("https://palcekitten.com/%d/%d", largura, altura)
+		catImageUrl := fmt.Sprintf("https://placekitten.com/%d/%d", largura, altura)
 		data.Images = append(data.Images, catImageUrl)
 
 	}
