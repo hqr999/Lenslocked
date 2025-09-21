@@ -50,20 +50,11 @@ func (gal Galleries) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (gal Galleries) Edit(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	gallery, err := gal.galleryByID(w, r)
 	if err != nil {
-		http.Error(w, "ID inválida", http.StatusNotFound)
 		return
 	}
-	gallery, err := gal.GalleryService.ByID(id)
-	if err != nil {
-		if errors.Is(err, models.ErrNotFound) {
-			http.Error(w, "Galeria não encontrada", http.StatusNotFound)
-			return
-		}
-		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
-		return
-	}
+
 	usuario := contexto.User(r.Context())
 	if gallery.UserID != usuario.ID {
 		http.Error(w, "Você não está autorizado para editar essa galeria", http.StatusForbidden)
@@ -81,18 +72,8 @@ func (gal Galleries) Edit(w http.ResponseWriter, r *http.Request) {
 }
 
 func (gal Galleries) Update(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	gallery, err := gal.galleryByID(w, r)
 	if err != nil {
-		http.Error(w, "ID inválida", http.StatusNotFound)
-		return
-	}
-	gallery, err := gal.GalleryService.ByID(id)
-	if err != nil {
-		if errors.Is(err, models.ErrNotFound) {
-			http.Error(w, "Galeria não encontrada", http.StatusNotFound)
-			return
-		}
-		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
 		return
 	}
 	usuario := contexto.User(r.Context())
@@ -135,21 +116,11 @@ func (gal Galleries) Index(w http.ResponseWriter, r *http.Request) {
 }
 
 func (gal Galleries) Show(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
-	if err != nil {
-		http.Error(w, "IP inválido", http.StatusNotFound)
-		return
-	}
-	gallery, err := gal.GalleryService.ByID(id)
-	if err != nil {
-		if errors.Is(err, models.ErrNotFound) {
-			http.Error(w, "Galeria não encontrada", http.StatusNotFound)
-			return
-		}
-		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
-		return
-	}
 
+	gallery, err := gal.galleryByID(w, r)
+	if err != nil {
+		return
+	}
 	var data struct {
 		ID     int
 		Title  string
@@ -165,5 +136,24 @@ func (gal Galleries) Show(w http.ResponseWriter, r *http.Request) {
 
 	}
 	gal.Templates.Show.Execute(w, r, data)
+
+}
+
+func (gal Galleries) galleryByID(w http.ResponseWriter, r *http.Request) (*models.Gallery, error) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		http.Error(w, "IP inválido", http.StatusNotFound)
+		return nil, err
+	}
+	gallery, err := gal.GalleryService.ByID(id)
+	if err != nil {
+		if errors.Is(err, models.ErrNotFound) {
+			http.Error(w, "Galeria não encontrada", http.StatusNotFound)
+			return nil, err
+		}
+		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
+		return nil, err
+	}
+	return gallery, nil
 
 }
