@@ -139,6 +139,21 @@ func (gal Galleries) Show(w http.ResponseWriter, r *http.Request) {
 
 }
 
+
+func (gal Galleries) Delete(w http.ResponseWriter,r *http.Request) {
+	gallery,err := gal.galleryByID(w,r,userMustOwnGallery)
+	if err != nil {
+			return 
+	}
+
+	err = gal.GalleryService.Delete(gallery.ID)
+	if err != nil {
+		http.Error(w,"Alguma coisa deu errado",http.StatusInternalServerError)
+		return 
+	}
+	http.Redirect(w,r,"/galleries",http.StatusFound)
+}
+
 type galleryOpt func(http.ResponseWriter,*http.Request,*models.Gallery) error
 
 func (gal Galleries) galleryByID(w http.ResponseWriter, r *http.Request,opts ...galleryOpt) (*models.Gallery, error) {
