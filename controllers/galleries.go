@@ -50,7 +50,7 @@ func (gal Galleries) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (gal Galleries) Edit(w http.ResponseWriter, r *http.Request) {
-	gallery, err := gal.galleryByID(w, r)
+	gallery, err := gal.galleryByID(w, r, userMustOwnGallery)
 	if err != nil {
 		return
 	}
@@ -72,7 +72,7 @@ func (gal Galleries) Edit(w http.ResponseWriter, r *http.Request) {
 }
 
 func (gal Galleries) Update(w http.ResponseWriter, r *http.Request) {
-	gallery, err := gal.galleryByID(w, r)
+	gallery, err := gal.galleryByID(w, r, userMustOwnGallery)
 	if err != nil {
 		return
 	}
@@ -139,7 +139,9 @@ func (gal Galleries) Show(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (gal Galleries) galleryByID(w http.ResponseWriter, r *http.Request) (*models.Gallery, error) {
+type galleryOpt func(http.ResponseWriter,*http.Request,*models.Gallery) error
+
+func (gal Galleries) galleryByID(w http.ResponseWriter, r *http.Request,opts ...galleryOpt) (*models.Gallery, error) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		http.Error(w, "IP inválido", http.StatusNotFound)
@@ -154,6 +156,22 @@ func (gal Galleries) galleryByID(w http.ResponseWriter, r *http.Request) (*model
 		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
 		return nil, err
 	}
+
+	for _, option := range opts {
+			err = option(w,r,gallery)
+			if err != nil {
+					return nil,err 
+		}
+	}
 	return gallery, nil
 
+}
+
+func userMustOwnGallery(w http.ResponseWriter, r *http.Request,gal *models.Gallery) error {
+	user := contexto.User(r.Context())
+	if gal.UserID != user.ID {
+			http.Error(w,"Você não está autorizado a editar essa galeria",http.StatusForbidden)
+			return fmt.Errorf("usuário não tem acesso a essa galeria")
+	}
+	return nil 
 }
