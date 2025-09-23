@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"path/filepath"
 )
 
 type Gallery struct {
@@ -14,6 +15,11 @@ type Gallery struct {
 
 type GalleryService struct {
 	BD *sql.DB
+
+	//ImagesDir é usado para dizer ao GalleryService onde armazenar
+	//e localizar imagens. Se não for setado, o GalleryService
+	//vai por padrão usar o diretório 'images'.
+	ImagesDir string
 }
 
 func (gs GalleryService) Create(title string, userID int) (*Gallery, error) {
@@ -95,5 +101,14 @@ func (gs GalleryService) Delete(id int) error {
 		return fmt.Errorf("delete gallery: %w", err)
 	}
 	return nil
+
+}
+
+func (gs *GalleryService) galleryDirectory(id int) string {
+	imagDir := gs.ImagesDir
+	if imagDir == "" {
+		imagDir = "images"
+	}
+	return filepath.Join(imagDir, fmt.Sprintf("gallery-%d", id))
 
 }
