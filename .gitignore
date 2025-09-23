@@ -12,6 +12,9 @@
 # Our specific binary
 lenslocked
 
+#Images folder 
+images/
+
 # Test binary, built with `go test -c`
 *.test
 
