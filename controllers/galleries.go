@@ -122,8 +122,8 @@ func (gal Galleries) Show(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type Image struct {
-		GalleryID int 
-		Filename string 
+		GalleryID int
+		Filename  string
 	}
 
 	var data struct {
@@ -134,39 +134,68 @@ func (gal Galleries) Show(w http.ResponseWriter, r *http.Request) {
 
 	data.ID = gallery.ID
 	data.Title = gallery.Title
-	imgs , err := gal.GalleryService.Images(gallery.ID)
+	imgs, err := gal.GalleryService.Images(gallery.ID)
 	if err != nil {
-			fmt.Println(err)
-			http.Error(w,"Algo deu errado",http.StatusInternalServerError)
-			return 
+		fmt.Println(err)
+		http.Error(w, "Algo deu errado", http.StatusInternalServerError)
+		return
 	}
 
 	for _, img := range imgs {
-		data.Images = append(data.Images, Image{img.GalleryID,img.Filname})
+		data.Images = append(data.Images, Image{img.GalleryID, img.Filname})
 	}
 
 	gal.Templates.Show.Execute(w, r, data)
 
 }
 
-
-func (gal Galleries) Delete(w http.ResponseWriter,r *http.Request) {
-	gallery,err := gal.galleryByID(w,r,userMustOwnGallery)
+func (gal Galleries) Delete(w http.ResponseWriter, r *http.Request) {
+	gallery, err := gal.galleryByID(w, r, userMustOwnGallery)
 	if err != nil {
-			return 
+		return
 	}
 
 	err = gal.GalleryService.Delete(gallery.ID)
 	if err != nil {
-		http.Error(w,"Alguma coisa deu errado",http.StatusInternalServerError)
-		return 
+		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
+		return
 	}
-	http.Redirect(w,r,"/galleries",http.StatusFound)
+	http.Redirect(w, r, "/galleries", http.StatusFound)
 }
 
-type galleryOpt func(http.ResponseWriter,*http.Request,*models.Gallery) error
+func (gal Galleries) Image(w http.ResponseWriter, r *http.Request) {
+	filename := chi.URLParam(r, "filename")
+	galID, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		http.Error(w, "ID inválida", http.StatusNotFound)
+		return
+	}
+	imgs, err := gal.GalleryService.Images(galID)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
+		return
+	}
+	var requested models.Image
+	imgF := false
+	for _, img := range imgs {
+		if img.Filname == filename {
+			requested = img
+			imgF = true
+			break
+		}
+	}
 
-func (gal Galleries) galleryByID(w http.ResponseWriter, r *http.Request,opts ...galleryOpt) (*models.Gallery, error) {
+	if !imgF {
+		http.Error(w, "Imagem não encontrada", http.StatusNotFound)
+		return
+	}
+	http.ServeFile(w, r, requested.Path)
+}
+
+type galleryOpt func(http.ResponseWriter, *http.Request, *models.Gallery) error
+
+func (gal Galleries) galleryByID(w http.ResponseWriter, r *http.Request, opts ...galleryOpt) (*models.Gallery, error) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		http.Error(w, "IP inválido", http.StatusNotFound)
@@ -183,20 +212,20 @@ func (gal Galleries) galleryByID(w http.ResponseWriter, r *http.Request,opts ...
 	}
 
 	for _, option := range opts {
-			err = option(w,r,gallery)
-			if err != nil {
-					return nil,err 
+		err = option(w, r, gallery)
+		if err != nil {
+			return nil, err
 		}
 	}
 	return gallery, nil
 
 }
 
-func userMustOwnGallery(w http.ResponseWriter, r *http.Request,gal *models.Gallery) error {
+func userMustOwnGallery(w http.ResponseWriter, r *http.Request, gal *models.Gallery) error {
 	user := contexto.User(r.Context())
 	if gal.UserID != user.ID {
-			http.Error(w,"Você não está autorizado a editar essa galeria",http.StatusForbidden)
-			return fmt.Errorf("usuário não tem acesso a essa galeria")
+		http.Error(w, "Você não está autorizado a editar essa galeria", http.StatusForbidden)
+		return fmt.Errorf("usuário não tem acesso a essa galeria")
 	}
-	return nil 
+	return nil
 }
