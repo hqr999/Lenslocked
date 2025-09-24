@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"math/rand/v2"
 	"net/http"
 	"strconv"
 
@@ -121,20 +120,31 @@ func (gal Galleries) Show(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
+
+	type Image struct {
+		GalleryID int 
+		Filename string 
+	}
+
 	var data struct {
 		ID     int
 		Title  string
-		Images []string
+		Images []Image
 	}
 
 	data.ID = gallery.ID
 	data.Title = gallery.Title
-	for i := 0; i < 20; i++ {
-		largura, altura := rand.IntN(500)+200, rand.IntN(500)+200
-		catImageUrl := fmt.Sprintf("https://placecats.com/%d/%d", largura, altura)
-		data.Images = append(data.Images, catImageUrl)
-
+	imgs , err := gal.GalleryService.Images(gallery.ID)
+	if err != nil {
+			fmt.Println(err)
+			http.Error(w,"Algo deu errado",http.StatusInternalServerError)
+			return 
 	}
+
+	for _, img := range imgs {
+		data.Images = append(data.Images, Image{img.GalleryID,img.Filname})
+	}
+
 	gal.Templates.Show.Execute(w, r, data)
 
 }
