@@ -170,6 +170,7 @@ func main() {
 
 	r.Route("/galleries", func(r chi.Router) {
 		r.Get("/{id}",galleriecC.Show)
+		r.Get("/{id}/images/{filename}",galleriecC.Image)
 		r.Group(func(r chi.Router) {
 			r.Use(user_middleware.RequireUser)
 			r.Get("/",galleriecC.Index)

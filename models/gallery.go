@@ -5,13 +5,14 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
+	"runtime"
 	"strings"
 )
 
 type Image struct {
-	GalleryID int 
-	Path string 
-	Filname string
+	GalleryID int
+	Path      string
+	Filname   string
 }
 
 type Gallery struct {
@@ -118,18 +119,17 @@ func (gs *GalleryService) Images(galID int) ([]Image, error) {
 	if erro != nil {
 		return nil, fmt.Errorf("recuperando imagens da galeria: %w", erro)
 	}
-
-	var imgs  []Image
+	var imgs []Image
 	for _, ff := range allFiles {
 		if checkExtension(ff, gs.extensions()) {
 			imgs = append(imgs, Image{
-				Path: ff,
-				Filname: filepath.Base(ff),
+				Path:      ff,
+				Filname:   filepath.Base(ff),
 				GalleryID: galID,
 			})
 		}
 	}
-	return imgs,nil
+	return imgs, nil
 }
 
 func (gs *GalleryService) extensions() []string {
@@ -139,17 +139,20 @@ func (gs *GalleryService) extensions() []string {
 func (gs *GalleryService) galleryDirectory(id int) string {
 	imagDir := gs.ImagesDir
 	if imagDir == "" {
-		imagDir = "images"
+		_, file_name, _, ok := runtime.Caller(1)
+		if !ok {
+			panic("TODO: BETTER WAY TO HANDLE THIS")
+		}
+		imagDir = filepath.Join(filepath.Dir(file_name), "../images")
 	}
 	return filepath.Join(imagDir, fmt.Sprintf("gallery-%d", id))
-
 }
 
-func checkExtension(ff string, ext []string) bool {
-	for i := 0; i < len(ext); i++ {
+func checkExtension(ff string, extensions []string) bool {
+	for _, ext := range extensions {
 		ff = strings.ToLower(ff)
-		extension := strings.ToLower(ext[i])
-		if filepath.Ext(ff) == extension {
+		ext = strings.ToLower(ext)
+		if filepath.Ext(ff) == ext {
 			return true
 		}
 	}
