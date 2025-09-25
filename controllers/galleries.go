@@ -170,27 +170,17 @@ func (gal Galleries) Image(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "ID inválida", http.StatusNotFound)
 		return
 	}
-	imgs, err := gal.GalleryService.Images(galID)
+	img, err := gal.GalleryService.Image(galID,filename)
 	if err != nil {
-		fmt.Println(err)
-		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
-		return
-	}
-	var requested models.Image
-	imgF := false
-	for _, img := range imgs {
-		if img.Filname == filename {
-			requested = img
-			imgF = true
-			break
+		if errors.Is(err,models.ErrNotFound){
+			http.Error(w, "Imagem não encontrada", http.StatusNotFound)
+			return
 		}
+		fmt.Println(err)
+		http.Error(w,"Alguma coisa deu errado",http.StatusNotFound)
 	}
-
-	if !imgF {
-		http.Error(w, "Imagem não encontrada", http.StatusNotFound)
-		return
-	}
-	http.ServeFile(w, r, requested.Path)
+		
+	http.ServeFile(w, r, img.Path)
 }
 
 type galleryOpt func(http.ResponseWriter, *http.Request, *models.Gallery) error
