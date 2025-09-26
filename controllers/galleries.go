@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
@@ -124,6 +125,7 @@ func (gal Galleries) Show(w http.ResponseWriter, r *http.Request) {
 	type Image struct {
 		GalleryID int
 		Filename  string
+		FilenameEscaped string 
 	}
 
 	var data struct {
@@ -142,7 +144,11 @@ func (gal Galleries) Show(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, img := range imgs {
-		data.Images = append(data.Images, Image{img.GalleryID, img.Filname})
+		data.Images = append(data.Images, Image{
+			GalleryID: img.GalleryID,
+			Filename: img.Filname,
+			FilenameEscaped: url.PathEscape(img.Filname),
+		})
 	}
 
 	gal.Templates.Show.Execute(w, r, data)
