@@ -60,12 +60,34 @@ func (gal Galleries) Edit(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Você não está autorizado para editar essa galeria", http.StatusForbidden)
 		return
 	}
+
+	type Image struct {
+		GalleryID int 
+		Filename string 
+		FileEscaped string 
+	}
+
 	var data struct {
 		ID    int
 		Title string
+		Images []Image
 	}
 	data.ID = gallery.ID
 	data.Title = gallery.Title
+	images , err := gal.GalleryService.Images(gallery.ID)
+	if err != nil {
+			fmt.Println(err)
+			http.Error(w,"Alguma coisa deu errado",http.StatusInternalServerError)
+		return 
+	}
+
+	for _,img := range images {
+		data.Images = append(data.Images, Image{
+			GalleryID: img.GalleryID,
+			Filename: img.Filname,
+			FileEscaped: url.PathEscape(img.Filname),
+		})
+	}
 
 	gal.Templates.Edit.Execute(w, r, data)
 
