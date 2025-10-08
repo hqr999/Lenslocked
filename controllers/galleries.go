@@ -64,7 +64,7 @@ func (gal Galleries) Edit(w http.ResponseWriter, r *http.Request) {
 	type Image struct {
 		GalleryID int 
 		Filename string 
-		FileEscaped string 
+		FilenameEscaped string 
 	}
 
 	var data struct {
@@ -85,7 +85,7 @@ func (gal Galleries) Edit(w http.ResponseWriter, r *http.Request) {
 		data.Images = append(data.Images, Image{
 			GalleryID: img.GalleryID,
 			Filename: img.Filname,
-			FileEscaped: url.PathEscape(img.Filname),
+			FilenameEscaped: url.PathEscape(img.Filname),
 		})
 	}
 

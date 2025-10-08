@@ -29,7 +29,7 @@
           <div class="absolute top-2 right-2">
             {{template "delete_image_form" .}}
           </div>
-          <img class="w-full" src="/galleries/{{.GalleryID}}/images/{{.FileEscaped}}">
+          <img class="w-full" src="/galleries/{{.GalleryID}}/images/{{.FilenameEscaped}}">
         </div>
         {{end}}
       </div>
@@ -51,7 +51,7 @@
 {{template "footer" .}}
 
 {{define "delete_image_form"}}
-<form action="/galleris/{{.GalleryID}}/images/{{.FileEscaped}}/delete"
+<form action="/galleris/{{.GalleryID}}/images/{{.FilenameEscaped}}/delete"
   method="post"
   onsubmit="return confirm('Você quer realmente deletar essa imagem ?');">
   {{campo_csrf}}
