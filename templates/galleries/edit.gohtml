@@ -1,7 +1,7 @@
 {{template "header" .}}
 <div class="p-8 w-full">
   <h1 class="pt-4 pb-8 text-3xl font-bold text-gray-800">
-      Editar Galeria
+    Editar Galeria
   </h1>
   <form action="/galleries/{{.ID}}" method="post">
     <div class="hidden">
@@ -17,31 +17,48 @@
         class="py-2 px-8 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-bold text-lg">Atualizar</button>
     </div>
   </form>
-    
-    <div class="py-4">
+
+  <div class="py-4">
     <div class="py-4">
       <h2 class="pb-4 text-sm font-semibold text-gray-800">
-          Imagens Atuais 
+        Imagens Atuais
       </h2>
       <div class="py-2 grid grid-cols-8 gap-2">
         {{range .Images}}
-          <div class="h-min w-full relative">
-          <img class="w-full" src="/galleries/{{.GalleryID}}/images/{{.FileEscaped}}">
+        <div class="h-min w-full relative">
+          <div class="absolute top-2 right-2">
+            {{template "delete_image_form" .}}
           </div>
+          <img class="w-full" src="/galleries/{{.GalleryID}}/images/{{.FileEscaped}}">
+        </div>
         {{end}}
       </div>
     </div>
-      <h2>Ações Perigosas</h2>
-    <form action="/galleries/{{.ID}}/delete" method="post" onsubmit="return confirm('Você quer realmente deletar essa galeria')">
-        <div class="hidden">
+    <h2>Ações Perigosas</h2>
+    <form action="/galleries/{{.ID}}/delete" method="post"
+      onsubmit="return confirm('Você quer realmente deletar essa galeria')">
+      <div class="hidden">
         {{campo_csrf}}
-        </div>
+      </div>
       <button type="submit"
         class="py-2 px-8 bg-red-600 hover:bg-red-700 text-white rounded font-bold text-lg">Deletar</button>
- 
-      </form>
-    </div>
+
+    </form>
+  </div>
 
 
 </div>
 {{template "footer" .}}
+
+{{define "delete_image_form"}}
+<form action="/galleris/{{.GalleryID}}/images/{{.FileEscaped}}/delete"
+  method="post"
+  onsubmit="return confirm('Você quer realmente deletar essa imagem ?');">
+  {{campo_csrf}}
+  <button type="submit" class="p-1 text-xs text-red-800  bg-red-100 border border-red-400 rounded">
+
+    Deletar
+  </button>
+
+</form>
+{{end}}
