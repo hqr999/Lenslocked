@@ -146,10 +146,22 @@ func (gs *GalleryService) Image(galleryID int, filename string) (Image, error) {
 	}
 
 	return Image{
-			Filname: filename,
-			GalleryID: galleryID,
-			Path: imgPath,
+		Filname:   filename,
+		GalleryID: galleryID,
+		Path:      imgPath,
 	}, nil
+}
+
+func (gs *GalleryService) DeleteImage(galleryID int, filename string) error {
+	image, err := gs.Image(galleryID, filename)
+	if err != nil {
+		return fmt.Errorf("deletando imagem: %w", err)
+	}
+	err = os.Remove(image.Path)
+	if err != nil {
+		return fmt.Errorf("deletando imagem: %w", err)
+	}
+	return nil
 }
 
 func (gs *GalleryService) extensions() []string {
