@@ -129,10 +129,9 @@ func main() {
 	tpl_pag_check_email := views.Must(views.ParseFS(templates.FS, "check-your-email.gohtml", "tailwind.gohtml"))
 	tpl_pag_reset_senha := views.Must(views.ParseFS(templates.FS, "reset-pw.gohtml", "tailwind.gohtml"))
 	tpl_nova_pag_gal := views.Must(views.ParseFS(templates.FS, "galleries/new.gohtml", "tailwind.gohtml"))
-	tpl_pag_edit_gal := views.Must(views.ParseFS(templates.FS,"galleries/edit.gohtml","tailwind.gohtml"))
-	tpl_pag_index_gal := views.Must(views.ParseFS(templates.FS,"galleries/index.gohtml","tailwind.gohtml"))
-	tpl_pag_mostra_gal := views.Must(views.ParseFS(templates.FS,"galleries/show.gohtml","tailwind.gohtml"))
-	
+	tpl_pag_edit_gal := views.Must(views.ParseFS(templates.FS, "galleries/edit.gohtml", "tailwind.gohtml"))
+	tpl_pag_index_gal := views.Must(views.ParseFS(templates.FS, "galleries/index.gohtml", "tailwind.gohtml"))
+	tpl_pag_mostra_gal := views.Must(views.ParseFS(templates.FS, "galleries/show.gohtml", "tailwind.gohtml"))
 
 	usersC.Templates.New = tpl_pag_inscr
 	usersC.Templates.Signin = tpl_pag_login
@@ -141,7 +140,7 @@ func main() {
 	usersC.Templates.ResetPassword = tpl_pag_reset_senha
 	galleriecC.Templates.New = tpl_nova_pag_gal
 	galleriecC.Templates.Edit = tpl_pag_edit_gal
-	galleriecC.Templates.Index = tpl_pag_index_gal 
+	galleriecC.Templates.Index = tpl_pag_index_gal
 	galleriecC.Templates.Show = tpl_pag_mostra_gal
 
 	//Configurando nosso roteador e nossas rotas
@@ -169,16 +168,17 @@ func main() {
 	})
 
 	r.Route("/galleries", func(r chi.Router) {
-		r.Get("/{id}",galleriecC.Show)
-		r.Get("/{id}/images/{filename}",galleriecC.Image)
+		r.Get("/{id}", galleriecC.Show)
+		r.Get("/{id}/images/{filename}", galleriecC.Image)
 		r.Group(func(r chi.Router) {
 			r.Use(user_middleware.RequireUser)
-			r.Get("/",galleriecC.Index)
+			r.Get("/", galleriecC.Index)
 			r.Get("/new", galleriecC.New)
-			r.Post("/",galleriecC.Create)
+			r.Post("/", galleriecC.Create)
 			r.Get("/{id}/edit", galleriecC.Edit)
-			r.Post("/{id}",galleriecC.Update)
-			r.Post("/{id}/delete",galleriecC.Delete)
+			r.Post("/{id}", galleriecC.Update)
+			r.Post("/{id}/delete", galleriecC.Delete)
+			r.Post("/{id}/images/{filename}/delete", galleriecC.DeleteImage)
 		})
 	})
 	//r.Get("/users/me", usersC.UsuarioAtual)

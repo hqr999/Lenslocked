@@ -62,29 +62,29 @@ func (gal Galleries) Edit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type Image struct {
-		GalleryID int 
-		Filename string 
-		FilenameEscaped string 
+		GalleryID       int
+		Filename        string
+		FilenameEscaped string
 	}
 
 	var data struct {
-		ID    int
-		Title string
+		ID     int
+		Title  string
 		Images []Image
 	}
 	data.ID = gallery.ID
 	data.Title = gallery.Title
-	images , err := gal.GalleryService.Images(gallery.ID)
+	images, err := gal.GalleryService.Images(gallery.ID)
 	if err != nil {
-			fmt.Println(err)
-			http.Error(w,"Alguma coisa deu errado",http.StatusInternalServerError)
-		return 
+		fmt.Println(err)
+		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
+		return
 	}
 
-	for _,img := range images {
+	for _, img := range images {
 		data.Images = append(data.Images, Image{
-			GalleryID: img.GalleryID,
-			Filename: img.Filname,
+			GalleryID:       img.GalleryID,
+			Filename:        img.Filname,
 			FilenameEscaped: url.PathEscape(img.Filname),
 		})
 	}
@@ -145,9 +145,9 @@ func (gal Galleries) Show(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type Image struct {
-		GalleryID int
-		Filename  string
-		FilenameEscaped string 
+		GalleryID       int
+		Filename        string
+		FilenameEscaped string
 	}
 
 	var data struct {
@@ -167,8 +167,8 @@ func (gal Galleries) Show(w http.ResponseWriter, r *http.Request) {
 
 	for _, img := range imgs {
 		data.Images = append(data.Images, Image{
-			GalleryID: img.GalleryID,
-			Filename: img.Filname,
+			GalleryID:       img.GalleryID,
+			Filename:        img.Filname,
 			FilenameEscaped: url.PathEscape(img.Filname),
 		})
 	}
@@ -198,17 +198,35 @@ func (gal Galleries) Image(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "ID inválida", http.StatusNotFound)
 		return
 	}
-	img, err := gal.GalleryService.Image(galID,filename)
+	img, err := gal.GalleryService.Image(galID, filename)
 	if err != nil {
-		if errors.Is(err,models.ErrNotFound){
+		if errors.Is(err, models.ErrNotFound) {
 			http.Error(w, "Imagem não encontrada", http.StatusNotFound)
 			return
 		}
 		fmt.Println(err)
-		http.Error(w,"Alguma coisa deu errado",http.StatusNotFound)
+		http.Error(w, "Alguma coisa deu errado", http.StatusNotFound)
 	}
-		
+
 	http.ServeFile(w, r, img.Path)
+}
+
+func (gal Galleries) DeleteImage(w http.ResponseWriter, r *http.Request) {
+	nome_arq := chi.URLParam(r, "filename")
+	gallery, err := gal.galleryByID(w, r, userMustOwnGallery)
+	if err != nil {
+		return
+	}
+
+	err = gal.GalleryService.DeleteImage(gallery.ID, nome_arq)
+	if err != nil {
+		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
+		return
+	}
+
+	cam_edit := fmt.Sprintf("/galleries/%d/edit", gallery.ID)
+	http.Redirect(w, r, cam_edit, http.StatusFound)
+
 }
 
 type galleryOpt func(http.ResponseWriter, *http.Request, *models.Gallery) error
