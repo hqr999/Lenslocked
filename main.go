@@ -179,6 +179,7 @@ func main() {
 			r.Post("/{id}", galleriecC.Update)
 			r.Post("/{id}/delete", galleriecC.Delete)
 			r.Post("/{id}/images/{filename}/delete", galleriecC.DeleteImage)
+			r.Post("/{id}/images", galleriecC.UploadImage)
 		})
 	})
 	//r.Get("/users/me", usersC.UsuarioAtual)
