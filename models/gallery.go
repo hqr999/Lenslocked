@@ -4,9 +4,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
+
 	//"runtime"
 	"strings"
 )
@@ -151,6 +153,30 @@ func (gs *GalleryService) Image(galleryID int, filename string) (Image, error) {
 		Path:      imgPath,
 	}, nil
 }
+
+
+func (gs *GalleryService) CreateImage(galleryID int, filename string,contents io.Reader) error {
+	galleryDir := gs.galleryDirectory(galleryID)
+	err := os.MkdirAll(galleryDir,0755)
+	if err != nil {
+		return fmt.Errorf("Criando gallery-%d imagens no diretorio: %w",galleryID,err)
+	}
+
+	imgCam := filepath.Join(galleryDir,filename)
+	destino,err := os.Create(imgCam)
+	if err != nil {
+		return fmt.Errorf("Criando arquivo da imagem: %w",err)
+	}
+
+	defer destino.Close()
+	_,err = io.Copy(destino,contents)
+	if err != nil {
+			return fmt.Errorf("Copiando conteúdos da imagem: %w",err)
+	}
+	return nil 
+
+}
+
 
 func (gs *GalleryService) DeleteImage(galleryID int, filename string) error {
 	image, err := gs.Image(galleryID, filename)

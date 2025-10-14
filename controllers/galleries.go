@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"path/filepath"
@@ -233,11 +232,14 @@ func (gal Galleries) UploadImage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		defer file.Close()
-		fmt.Printf("Tentando dar upload em %v na galeria %d\n", fileHeader.Filename, gallery.ID)
-		io.Copy(w, file)
-		return
+		err = gal.GalleryService.CreateImage(gallery.ID,fileHeader.Filename,file)
+		if err != nil {
+			http.Error(w,"Alguma coisa deu errado",http.StatusInternalServerError)
+				return 
+		}
 	}
-
+	editCam := fmt.Sprintf("/galleries/%d/edit",gallery.ID)
+	http.Redirect(w,r,editCam,http.StatusFound)
 }
 
 func (gal Galleries) DeleteImage(w http.ResponseWriter, r *http.Request) {
