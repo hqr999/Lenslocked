@@ -7,7 +7,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"runtime"
+	//"runtime"
 	"strings"
 )
 
@@ -170,13 +170,20 @@ func (gs *GalleryService) extensions() []string {
 
 func (gs *GalleryService) galleryDirectory(id int) string {
 	imagDir := gs.ImagesDir
-	if imagDir == "" {
+	//Another way of getting the path
+	/*if imagDir == "" {
 		_, file_name, _, ok := runtime.Caller(1)
 		if !ok {
 			panic("TODO: BETTER WAY TO HANDLE THIS")
 		}
 		imagDir = filepath.Join(filepath.Dir(file_name), "../images")
+	}*/
+
+	//One way of getting the path  
+	if imagDir == "" {
+		imagDir = "images"
 	}
+
 	return filepath.Join(imagDir, fmt.Sprintf("gallery-%d", id))
 }
 
