@@ -56,7 +56,7 @@ func (u Usuarios) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	setCookie(w, CookieSession, session.Token)
-	http.Redirect(w, r, "/users/me", http.StatusFound)
+	http.Redirect(w, r, "/galleries", http.StatusFound)
 }
 
 func (u Usuarios) Signin(w http.ResponseWriter, r *http.Request) {
@@ -86,7 +86,7 @@ func (u Usuarios) ProcessSignin(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Alguma coisa deu errado", http.StatusInternalServerError)
 	}
 	setCookie(w, CookieSession, session.Token)
-	http.Redirect(w, r, "/users/me", http.StatusFound)
+	http.Redirect(w, r, "/galleries", http.StatusFound)
 }
 
 func (u Usuarios) UsuarioAtual(w http.ResponseWriter, r *http.Request) {
