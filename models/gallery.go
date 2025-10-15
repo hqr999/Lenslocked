@@ -154,29 +154,33 @@ func (gs *GalleryService) Image(galleryID int, filename string) (Image, error) {
 	}, nil
 }
 
+func (gs *GalleryService) CreateImage(galleryID int, filename string, contents io.ReadSeeker) error {
+	err := checkContentType(contents, gs.imageContentTypes())
 
-func (gs *GalleryService) CreateImage(galleryID int, filename string,contents io.Reader) error {
-	galleryDir := gs.galleryDirectory(galleryID)
-	err := os.MkdirAll(galleryDir,0755)
 	if err != nil {
-		return fmt.Errorf("Criando gallery-%d imagens no diretorio: %w",galleryID,err)
+		return fmt.Errorf("Criando arquivo da imagem %v: %w", filename, err)
 	}
 
-	imgCam := filepath.Join(galleryDir,filename)
-	destino,err := os.Create(imgCam)
+	galleryDir := gs.galleryDirectory(galleryID)
+	err = os.MkdirAll(galleryDir, 0755)
 	if err != nil {
-		return fmt.Errorf("Criando arquivo da imagem: %w",err)
+		return fmt.Errorf("Criando gallery-%d imagens no diretorio: %w", galleryID, err)
+	}
+
+	imgCam := filepath.Join(galleryDir, filename)
+	destino, err := os.Create(imgCam)
+	if err != nil {
+		return fmt.Errorf("Criando arquivo da imagem: %w", err)
 	}
 
 	defer destino.Close()
-	_,err = io.Copy(destino,contents)
+	_, err = io.Copy(destino, contents)
 	if err != nil {
-			return fmt.Errorf("Copiando conteúdos da imagem: %w",err)
+		return fmt.Errorf("Copiando conteúdos da imagem: %w", err)
 	}
-	return nil 
+	return nil
 
 }
-
 
 func (gs *GalleryService) DeleteImage(galleryID int, filename string) error {
 	image, err := gs.Image(galleryID, filename)
@@ -194,6 +198,10 @@ func (gs *GalleryService) extensions() []string {
 	return []string{".png", ".jpg", ".jpeg", ".gif"}
 }
 
+func (gs *GalleryService) imageContentTypes() []string {
+	return []string{"image/png", "image/jpeg", "image/gif"}
+}
+
 func (gs *GalleryService) galleryDirectory(id int) string {
 	imagDir := gs.ImagesDir
 	//Another way of getting the path
@@ -205,7 +213,7 @@ func (gs *GalleryService) galleryDirectory(id int) string {
 		imagDir = filepath.Join(filepath.Dir(file_name), "../images")
 	}*/
 
-	//One way of getting the path  
+	//One way of getting the path
 	if imagDir == "" {
 		imagDir = "images"
 	}

@@ -232,14 +232,18 @@ func (gal Galleries) UploadImage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		defer file.Close()
-		err = gal.GalleryService.CreateImage(gallery.ID,fileHeader.Filename,file)
+		err = gal.GalleryService.CreateImage(gallery.ID, fileHeader.Filename, file)
 		if err != nil {
-			http.Error(w,"Alguma coisa deu errado",http.StatusInternalServerError)
-				return 
+			var tipoArq models.FileError
+			if errors.As(err, &tipoArq) {
+				msg := fmt.Sprintf("%v tem uma extensão inválida. Você só pode dar upload em arquivos com extensões do tipo: png,gif e jpg.", fileHeader.Filename)
+				http.Error(w, msg, http.StatusBadRequest)
+				return
+			}
 		}
 	}
-	editCam := fmt.Sprintf("/galleries/%d/edit",gallery.ID)
-	http.Redirect(w,r,editCam,http.StatusFound)
+	editCam := fmt.Sprintf("/galleries/%d/edit", gallery.ID)
+	http.Redirect(w, r, editCam, http.StatusFound)
 }
 
 func (gal Galleries) DeleteImage(w http.ResponseWriter, r *http.Request) {
