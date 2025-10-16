@@ -192,6 +192,9 @@ func main() {
 	})
 	//r.Get("/users/me", usersC.UsuarioAtual)
 
+	assetsHand := http.FileServer(http.Dir("assets"))
+	r.Get("/assets/*",http.StripPrefix("/assets",assetsHand).ServeHTTP)
+
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Página não encontrada", http.StatusNotFound)
 	})

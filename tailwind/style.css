@@ -1,2 +1,2 @@
 @import "tailwindcss";
-@source "./templates/**/*.{gohtml,html}";
+@source "../templates/**/*.{gohtml,html}";
