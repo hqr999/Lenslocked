@@ -55,14 +55,12 @@ func loadEnvConfig() (config, error) {
 		return cfg, nil
 	}
 
-
 	cfg.SMTP.Username = os.Getenv("SMTP_USERNAME")
 	cfg.SMTP.Password = os.Getenv("SMTP_PASSWORD")
 
-
 	cfg.Server.Address = os.Getenv("SERVER_ADDRESS")
 	cfg.CSRT.Key = os.Getenv("CSRF_KEY")
-	cfg.CSRT.Secure =	os.Getenv("CSRF_SECURE") == "false"
+	cfg.CSRT.Secure = os.Getenv("CSRF_SECURE") == "false"
 	tmpVar := "localhost" + cfg.Server.Address
 	cfg.CSRT.TrustedOrigin = []string{tmpVar}
 
@@ -75,18 +73,23 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
+	err = run(cfg)
+	if err != nil {
+		panic(err)
+	}
+}
+func run(cfg config) error {
 	//Fazendo a conexão com o Banco de Dados
 	config := models.DefaultPostrgesConfig()
 	db, err := models.Open(config)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer db.Close()
 
 	err = models.Migrando_FS(db, migracoes.FS, ".")
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	//Chamando a migração
@@ -193,7 +196,7 @@ func main() {
 	//r.Get("/users/me", usersC.UsuarioAtual)
 
 	assetsHand := http.FileServer(http.Dir("assets"))
-	r.Get("/assets/*",http.StripPrefix("/assets",assetsHand).ServeHTTP)
+	r.Get("/assets/*", http.StripPrefix("/assets", assetsHand).ServeHTTP)
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Página não encontrada", http.StatusNotFound)
@@ -201,18 +204,5 @@ func main() {
 
 	//Iniciando o Servidor
 	fmt.Printf("Começando o servidor na porta %s... \n", cfg.Server.Address)
-	err = http.ListenAndServe(cfg.Server.Address, r)
-	if err != nil {
-		panic(err)
-	}
+	return http.ListenAndServe(cfg.Server.Address, r)
 }
-
-// Uncomment the TimerMiddleware func and use it above in main() to see
-// it in action.
-// func TimerMiddleware(h http.HandlerFunc) http.HandlerFunc {
-// 	return func(w http.ResponseWriter, r *http.Request) {
-// 		start := time.Now()
-// 		h(w, r)
-// 		fmt.Println("Request time:", time.Since(start))
-// 	}
-// }
