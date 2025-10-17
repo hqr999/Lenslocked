@@ -1,2 +1,8 @@
 @import "tailwindcss";
-@source "../templates/**/*.{gohtml,html}";
+@source "/templates/**/*.{gohtml,html}";
+
+/*
+* Tire os dois pontos inciais(do path de tamplates) 
+* da segunda linha se quiser rodar o tailwind pelo Docker
+* */
+
