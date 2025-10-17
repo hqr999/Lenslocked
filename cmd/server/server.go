@@ -80,8 +80,7 @@ func main() {
 }
 func run(cfg config) error {
 	//Fazendo a conexão com o Banco de Dados
-	config := models.DefaultPostrgesConfig()
-	db, err := models.Open(config)
+	db, err := models.Open(cfg.PSQL)
 	if err != nil {
 		return err
 	}
