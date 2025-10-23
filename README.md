@@ -35,7 +35,8 @@ Down below you can see some of the screens of the app when it runs. I created a 
 
 ![screen4](screenshots/screen4.jpg)
 
-* Sign up page 
+* Sign up page
+
 ![screen5](screenshots/screen5.jpg)
 
 * Your Galleries page
