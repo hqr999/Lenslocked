@@ -21,35 +21,35 @@ Down below you can see some of the screens of the app when it runs. I created a 
 
 * Home Page 
 
-<img src="screenshots/screen1.jpg" alt="Descrição da imagem" width="500" height="300">
+![image1](https://github.com/hqr999/Lenslocked/blob/main/screenshots/screen1.jpg?raw=true)
         
 * Contact page
 
-<img src="screenshots/screen2.jpg" alt="Descrição da imagem" width="500" height="300">
+![image2](https://github.com/hqr999/Lenslocked/blob/main/screenshots/screen2.jpg?raw=true)
 
 * FAQ page
 
-<img src="screenshots/screen3.jpg" alt="Descrição da imagem" width="500" height="300">
+![image3](https://github.com/hqr999/Lenslocked/blob/main/screenshots/screen3.jpg?raw=true)
 
 * Sign in page
 
-<img src="screenshots/screen4.jpg" alt="Descrição da imagem" width="500" height="300">
+![image4](https://github.com/hqr999/Lenslocked/blob/main/screenshots/screen4.jpg?raw=true)
 
 * Sign up page
 
-<img src="screenshots/screen5.jpg" alt="Descrição da imagem" width="500" height="300">
+![image5](https://github.com/hqr999/Lenslocked/blob/main/screenshots/screen5.jpg?raw=true)
 
 * Your Galleries page
 
-<img src="screenshots/screen6.jpg" alt="Descrição da imagem" width="500" height="300">
+![image6](https://github.com/hqr999/Lenslocked/blob/main/screenshots/screen6.jpg?raw=true)
 
 * Screenshot 1 of the Books gallery
 
-<img src="screenshots/screen7.jpg" alt="Descrição da imagem" width="500" height="300">
+![image7](https://github.com/hqr999/Lenslocked/blob/main/screenshots/screen7.jpg?raw=true)
 
 * Screenshot 2 of the Books gallery
 
-<img src="screenshots/screen8.jpg" alt="Descrição da imagem" width="500" height="300">
+![image8](https://github.com/hqr999/Lenslocked/blob/main/screenshots/screen8.jpg?raw=true)
 
 ## References 
 
