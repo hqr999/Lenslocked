@@ -21,35 +21,35 @@ Down below you can see some of the screens of the app when it runs. I created a 
 
 * Home Page 
 
-![image1](/images/screen1.jpg)
+![image1](/screenshots/screen1.jpg)
         
 * Contact page
 
-![image2](/images/screen2.jpg)
+![image2](/screenshots/screen2.jpg)
 
 * FAQ page
 
-![image3](/images/screen3.jpg)
+![image3](/screenshots/screen3.jpg)
 
 * Sign in page
 
-![image4](/images/screen4.jpg)
+![image4](/screenshots/screen4.jpg)
 
 * Sign up page
 
-![image5](/images/screen5.jpg)
+![image5](/screenshots/screen5.jpg)
 
 * Your Galleries page
 
-![image6](/images/screen6.jpg)
+![image6](/screenshots/screen6.jpg)
 
 * Screenshot 1 of the Books gallery
 
-![image7](/images/screen7.jpg)
+![image7](/screenshots/screen7.jpg)
 
 * Screenshot 2 of the Books gallery
 
-![image8](/images/screen8.jpg)
+![image8](/screenshots/screen8.jpg)
 
 ## References 
 
