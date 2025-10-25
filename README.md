@@ -17,39 +17,7 @@ Open another terminal, while docker runs, and run our server with:
 
 
 ### Screenshots
-Down below you can see some of the screens of the app when it runs. I created a simple user and a gallery with some pics for the example:
-
-* Home Page 
-
-![image1](/screenshots/screen1.jpg)
-        
-* Contact page
-
-![image2](/screenshots/screen2.jpg)
-
-* FAQ page
-
-![image3](/screenshots/screen3.jpg)
-
-* Sign in page
-
-![image4](/screenshots/screen4.jpg)
-
-* Sign up page
-
-![image5](/screenshots/screen5.jpg)
-
-* Your Galleries page
-
-![image6](/screenshots/screen6.jpg)
-
-* Screenshot 1 of the Books gallery
-
-![image7](/screenshots/screen7.jpg)
-
-* Screenshot 2 of the Books gallery
-
-![image8](/screenshots/screen8.jpg)
+See all screenshots at [here](/screenshots/screenshots.md)
 
 ## References 
 
