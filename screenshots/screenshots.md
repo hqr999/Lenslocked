@@ -7,7 +7,7 @@
 * Contact Page
 ![image2](screen2.jpg)
 
-*FAQ 
+* FAQ 
 ![image3](screen3.jpg)
 
 * Sign in 
