@@ -15,23 +15,6 @@ Open another terminal, while docker runs, and run our server with:
 
     go run cmd/server/server.go
 
-
-### Screenshots
-
-* Main Page
-![image1](screenshots/screen1.jpg)
-
-After loging in with a valid user, that has galleries created.
-
-* My galleries page
-![image6](screenshots/screen6.jpg)
-
-* Books gallery screenshot 1 
-![image7](screenshots/screen7.jpg)
-
-* Books gallery screenhsot 2
-![image8](screenshots/screen8.jpg)
-
 ## References 
 
 * https://github.com/go-chi/chi
