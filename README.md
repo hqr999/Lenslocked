@@ -21,35 +21,35 @@ Down below you can see some of the screens of the app when it runs. I created a 
 
 * Home Page 
 
-![image1](https://github.com/hqr999/Lenslocked/blob/main/screenshots/screen1.jpg?raw=true)
+![image1](/images/screen1.jpg)
         
 * Contact page
 
-![image2](https://github.com/hqr999/Lenslocked/blob/main/screenshots/screen2.jpg?raw=true)
+![image2](/images/screen2.jpg)
 
 * FAQ page
 
-![image3](https://github.com/hqr999/Lenslocked/blob/main/screenshots/screen3.jpg?raw=true)
+![image3](/images/screen3.jpg)
 
 * Sign in page
 
-![image4](https://github.com/hqr999/Lenslocked/blob/main/screenshots/screen4.jpg?raw=true)
+![image4](/images/screen4.jpg)
 
 * Sign up page
 
-![image5](https://github.com/hqr999/Lenslocked/blob/main/screenshots/screen5.jpg?raw=true)
+![image5](/images/screen5.jpg)
 
 * Your Galleries page
 
-![image6](https://github.com/hqr999/Lenslocked/blob/main/screenshots/screen6.jpg?raw=true)
+![image6](/images/screen6.jpg)
 
 * Screenshot 1 of the Books gallery
 
-![image7](https://github.com/hqr999/Lenslocked/blob/main/screenshots/screen7.jpg?raw=true)
+![image7](/images/screen7.jpg)
 
 * Screenshot 2 of the Books gallery
 
-![image8](https://github.com/hqr999/Lenslocked/blob/main/screenshots/screen8.jpg?raw=true)
+![image8](/images/screen8.jpg)
 
 ## References 
 
