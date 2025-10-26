@@ -15,6 +15,43 @@ Open another terminal, while docker runs, and run our server with:
 
     go run cmd/server/server.go
 
+## Screenshots 
+
+Down below are the pages of our application when it up and running, i also added an example of what a gallery page looks like.
+
+* Main Page
+
+![img1](screenshots/screen1.jpg)
+
+* Contact Page
+
+![img2](screenshots/screen2.jpg)
+
+* FAQ Page 
+
+![img3](screenshots/screen3.jpg)
+
+
+* Sign in Page 
+
+![img4](screenshots/screen4.jpg)
+
+* Sign Up Page 
+
+![img5](screenshots/screen5.jpg)
+
+* Galleries of the user Page 
+
+![img6](screenshots/screen6.jpg)
+
+* Example of a Gallery Page 
+
+![img7](screenshots/screen7.jpg)
+
+* Example two of a Gallery Page 
+
+![img8](screenshots/screen8.jpg)
+
 ## References 
 
 * https://github.com/go-chi/chi
